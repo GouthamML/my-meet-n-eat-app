@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine, Float
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.sqlite import DATETIME
 from sqlalchemy.orm import relationship, sessionmaker
@@ -50,6 +50,32 @@ class User(Base):
     	user_id = data['id']
     	return user_id
 
+    @property
+    def serialize(self):
+         """Return object data in easily serializeable format"""
+         return {
+            "id" : self.id,
+            "username": self.username,
+            "picture" : self.picture
+            }
+
+
+class OAuthMembership(Base):
+    """docstring for """
+    __tablename__ = 'oauthmembership'
+    provider = Column(String(30), primary_key=True)
+    provider_userid =  Column(String(100), primary_key=True)
+    user_id =  Column(Integer,ForeignKey('user.id'))
+    user = relationship(User)
+
+    @property
+    def serialize(self):
+         """Return object data in easily serializeable format"""
+         return {
+         "provider" : self.provider,
+         "provideruserid": self.provider_userid
+         }
+
 
 class Request(Base):
     __tablename__ = 'request'
@@ -57,10 +83,41 @@ class Request(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     meal_type = Column(String(32))
     location_string = Column(String)
-    latitude = Column(String)
-    longitude = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
     meal_time = Column(DATETIME)
     filled = Column(Boolean, unique=False, default=False)
+
+    @property
+    def serialize(self):
+         """Return object data in easily serializeable format"""
+         return {
+         "id" : self.id,
+         "filled": self.filled,
+         "meal_type": self.meal_type,
+         "longitude": self.longitude,
+         "latitude": self.latitude,
+         "location_string": self.location_string,
+         "meal_time": self.meal_time,
+         }
+
+    @staticmethod
+    def validate(data):
+        errors = []
+        required_fields = ['meal_type','longitude', 'latitude', 'location_string', 'meal_time']
+        if type(data) != dict:
+            error = dict({"Missing required parameters":" ".format(', '.join(required_fields))})
+            errors.append(error)
+        else:
+            for value in required_fields:
+                if not value in data:
+                    error = dict({ value: "Required" })
+                    errors.append(error)
+                else:
+                    if not data[value]:
+                        error = dict({ value: "Required" })
+                        errors.append(error)
+        return errors
 
 
 class Proposal(Base):
@@ -81,6 +138,35 @@ class Proposal(Base):
            'longitude': r.longitude
          }
         
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+        "id" : self.id,
+        "filled": self.filled,
+        "request_id": self.request_id,
+        "user_proposed_to": self.user_proposed_to,
+        "user_proposed_from": self.user_proposed_from,
+        }
+
+    @staticmethod
+    def validate(data):
+        errors = []
+        required_fields = ['request_id']
+        if type(data) != dict:
+            error = dict({"Missing required parameters":" ".format(', '.join(required_fields))})
+            errors.append(error)
+        else:
+            for value in required_fields:
+                if not value in data:
+                    error = dict({ value: "Required" })
+                    errors.append(error)
+                else:
+                    if not data[value]:
+                        error = dict({ value: "Required" })
+                        errors.append(error)
+        return errors
+
 
 class MealDate(Base):
     __tablename__= 'mealdate'
@@ -97,3 +183,37 @@ class MealDate(Base):
         p = session.query(Proposal).filter_by(id=self.proposal_id).first()
         p = session.query(Request).filter_by(id=p.request_id).first()
         return p.meal_time
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializeable format"""
+        return {
+        "id" : self.id,
+        "meal_time": self.meal_time,
+        "restaurant_picture": self.restaurant_picture,
+        "restaurant_address": self.restaurant_address,
+        "restaurant_name": self.restaurant_name,
+        "user_1": self.user_1,
+        "user_2": self.user_2
+        }
+
+    @staticmethod
+    def validate(data):
+        errors = []
+        required_fields = ['accept_proposal', 'proposal_id']
+        if type(data) != dict:
+            error = dict({"Missing required parameters":" ".format(', '.join(required_fields))})
+            errors.append(error)
+        else:
+            for value in required_fields:
+                if not value in data:
+                    error = dict({ value: "Required" })
+                    errors.append(error)
+                else:
+                    if not data[value]:
+                        error = dict({ value: "Required" })
+                        errors.append(error)
+        return errors
+
+
+Base.metadata.create_all(engine)

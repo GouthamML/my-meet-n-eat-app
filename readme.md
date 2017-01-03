@@ -12,7 +12,10 @@ Requeriments:
 * Flask-HTTPauth
 * SQLAlchemy
 * simplejson
+* colorama
 * Redis
+* oauth
+* rauth
 
 Install Requeriments:
 

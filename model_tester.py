@@ -1,7 +1,7 @@
 from app.models import *
 from colorama import init as init_color, Fore as color
-from apis.findARestaurant import findARestaurant as restaurant
-from apis.geocode import getGeocodeLocation as geolocation
+from app.apis.findARestaurant import findARestaurant as restaurant
+from app.apis.geocode import getGeocodeLocation as geolocation
 from datetime import datetime
 import simplejson as json
 import pycountry
@@ -56,6 +56,14 @@ def assert_user():
         count_id += 1
     return True
 
+
+def all_user():
+    user =  session.query(User).all()
+    for u in user:
+        print u.id
+        print u.username
+        print u.picture
+        print u.email
 
 def create_request():
     countries = []
@@ -145,3 +153,4 @@ if __name__ == '__main__':
     #create_proposal()
     #create_mealdate()
     #assert_mealdate()
+    all_user()

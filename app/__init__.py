@@ -8,12 +8,13 @@ from sqlalchemy_utils import database_exists, create_database
 app = Flask(__name__)
 csrf = CsrfProtect()
 
-if not database_exists(engine.url):
-    create_database(engine.url)
+app.config['OAUTH_CREDENTIALS'] = {
+      'google': {
+          'id': '1080912678595-adm52eo5f78jru65923qia22itfasa7d.apps.googleusercontent.com',
+          'secret': '1vq9zxw2rMiBtUVeLlAlNOVw'
+      }
+}
 
 csrf.init_app(app)
-
-with app.app_context():
-    Base.metadata.create_all(engine)
 
 from app import models, views
