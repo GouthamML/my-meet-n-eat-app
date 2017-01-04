@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+    <title>Meet N' Mean</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    {% assets "css_material" %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
+    {% endassets %}
+    {% assets "js_material" %}
+    <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+</head>
+<body>
+ <!-- Uses a header that contracts as the page scrolls down. -->
+<style>
+.demo-layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type  {
+  padding-right: 0;
+}
+</style>
+
+<div class="demo-layout-waterfall mdl-layout mdl-js-layout">
+  <header class="mdl-layout__header mdl-layout__header--waterfall">
+    <!-- Top row, always visible -->
+    <div class="mdl-layout__header-row">
+      <!-- Title -->
+      <span class="mdl-layout-title">Meet and Mean </span>
+      <div class="mdl-layout-spacer"></div>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
+                  mdl-textfield--floating-label mdl-textfield--align-right">
+                <form action="#">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                        <label class="mdl-button mdl-js-button mdl-button--icon" for="site-search">
+                                <i class="material-icons">search</i>
+                            </label>
+                            <div class="mdl-textfield__expandable-holder">
+                                <input class="mdl-textfield__input" type="search" id="site-search" />
+                                <label class="mdl-textfield__label" for="site-search">Search</label>
+                            </div>
+                        </div>
+                </form>
+      </div>
+    </div>
+    <!-- Bottom row, not visible on scroll -->
+    <div class="mdl-layout__header-row">
+      <div class="mdl-layout-spacer"></div>
+      <!-- Navigation -->
+        {% if user_authenticated %}
+
+      <nav class="mdl-navigation">
+        <a class="mdl-navigation__link" href="{{ url_for('logout') }}">Logout</a>
+        <a class="mdl-navigation__link" href="">Create Request</a>
+      </nav>
+
+        {% endif %}
+
+    </div>
+  </header>            
+        {% if user_authenticated %}
+
+  <div class="mdl-layout__drawer">
+    <span class="mdl-chip mdl-chip--contact mdl-chip--deletable">
+    <img class="mdl-chip__contact" src='{{login_session['picture']}}'></img>
+    <span class="mdl-chip__text">{{login_session['username']}}</span>
+    </span>
+    <nav class="mdl-navigation">
+      <a class="mdl-navigation__link" href="">{{login_session['email']}}</a>
+      <a class="mdl-navigation__link" href="">Your Request</a>
+      <a class="mdl-navigation__link" href="">Your Proposal</a>
+      <a class="mdl-navigation__link" href="">Your Meal</a>
+    </nav>
+  </div>
+        
+        {% endif %}
+
+  <main class="mdl-layout__content">
+    <div class="page-content">
+          {% block content %}
+          {% endblock %}
+    </div>
+  </main>
+
+  <footer class="mdl-mega-footer">
+    <div class="mdl-mega-footer--middle-section">
+      <h6>Meet and Mean App is make in Flask</h6>
+    </div>
+  </footer>
+</div>
+
+</body>
+</html

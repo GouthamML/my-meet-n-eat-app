@@ -1,10 +1,15 @@
-<html>
-    <head>
-        <title>OAuth Flask Demo</title>
-    </head>
-    <body>
-<h2>I don't know you!</h2>
-<p><a data-device="desktop" data-name="google" data-redirect="{{ url_for('index') }}" id='js-google-oauth-login' href="{{ url_for('oauth_authorize', provider='google') }}">Login with Google</a></p>
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="mdl-grid">
+  <div class="mdl-layout-spacer"></div>
+    <div class="mdl-cell mdl-cell--4-col">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+            <a data-device="desktop" data-name="google" data-redirect="{{ url_for('index') }}" id='js-google-oauth-login' href="{{ url_for('oauth_authorize', provider='google') }}">Login with Google</a>
+        </button>
+    </div>
+  <div class="mdl-layout-spacer"></div>
+</div>
 
 <script>
 (function() {
@@ -117,5 +122,4 @@
 
 })();
 </script>
-</body>
-</html>
+{% endblock %}

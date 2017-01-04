@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine, Float
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine, Float, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.sqlite import DATETIME
 from sqlalchemy.orm import relationship, sessionmaker
@@ -14,9 +14,16 @@ engine = create_engine('sqlite:///meet_n_eat.db'); DBSession = sessionmaker(bind
 secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
 
 
-class User(Base):
+class BaseModel(Base):
+    __abstract__  = True
+    id            = Column(Integer, primary_key=True)
+    date_created  = Column(DATETIME,  default=func.current_timestamp())
+    date_modified = Column(DATETIME,  default=func.current_timestamp(),
+                                           onupdate=func.current_timestamp())
+
+
+class User(BaseModel):
     __tablename__ = 'user'
-    id = Column(Integer, primary_key=True)
     username = Column(String(32), index=True)
     picture = Column(String)
     email = Column(String)
@@ -77,9 +84,8 @@ class OAuthMembership(Base):
          }
 
 
-class Request(Base):
+class Request(BaseModel):
     __tablename__ = 'request'
-    id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     meal_type = Column(String(32))
     location_string = Column(String)
@@ -120,9 +126,8 @@ class Request(Base):
         return errors
 
 
-class Proposal(Base):
+class Proposal(BaseModel):
     __tablename__= 'proposal'
-    id = Column(Integer, primary_key=True)
     user_proposed_to = Column(Integer, ForeignKey('user.id'))
     user_proposed_from = Column(Integer, ForeignKey('request.user_id'))
     request_id = Column(Integer, ForeignKey('request.id'))
@@ -168,9 +173,8 @@ class Proposal(Base):
         return errors
 
 
-class MealDate(Base):
+class MealDate(BaseModel):
     __tablename__= 'mealdate'
-    id = Column(Integer, primary_key=True)
     proposal_id = Column(Integer, ForeignKey('proposal.id'))
     user_id_1 = Column(Integer, ForeignKey('proposal.user_proposed_to'))
     user_id_2 = Column(Integer, ForeignKey('proposal.user_proposed_from'))
