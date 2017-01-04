@@ -19,9 +19,14 @@ setup(
         'flask>=0.10',
         'sqlalchemy',
         'Flask-HTTPauth',
+        'oauth',
         'redis',
         'simplejson',
-
+        'rauth',
+        'flask-assets',
+        'itsdangerous',
+        'passlib',
+        'colorama'
     ],
     classifiers=[
         'Environment :: Web Environment',
