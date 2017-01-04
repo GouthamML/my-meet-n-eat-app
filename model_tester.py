@@ -99,58 +99,78 @@ def all_requests():
     return True
 
 
-def create_proposal(meal_type='coffee'):
-    request = session.query(Request).filter_by(meal_type=meal_type).first()
-    id_user_proposed_to = session.query(User.id).filter_by(username=usernames[0][0]).first()
-    #proposed to charlyjazz from willy_chessy
-    if request is not None:
-        proposal = Proposal(
-            user_proposed_to=id_user_proposed_to[0],
-            user_proposed_from=request.user_id,
-            request_id=request.id,
-            filled=True)
-        session.add(proposal)
-        session.commit()
-    return True
+def create_proposal(meal_list=[], *args):
+    for meal in meal_list:
+        print(color.CYAN+meal)
+        request = session.query(Request).filter_by(meal_type=meal).first()
+        id_user_proposed_to = session.query(User.id).filter_by(username=usernames[0][0]).first()
+        #proposed to sexy girl from ugly guy
+        if request is not None:
+            if not id_user_proposed_to[0] == request.user_id:
+                proposal = Proposal(
+                    user_proposed_to=id_user_proposed_to[0],
+                    user_proposed_from=request.user_id,
+                    request_id=request.id,
+                    filled=True)
+                session.add(proposal)
+                session.commit()
+            else:
+                print (color.RED + 'Same ID')
+        else:
+            print (color.LIGHTRED_EX + 'Request no exist')  
 
-def create_mealdate(id=1):
-    # Users confirm proposal:
-    proposal = session.query(Proposal).filter_by(id=id).first()
-    request = (proposal.get_request_data)
 
-    rest = restaurant(request['meal_type'], request['location'])
-    print(color.MAGENTA + unicode(rest['name']))
-    print(unicode(rest['address']))
-    print(str(rest['image']))
-    
-    #creating mealdate!
-    mealdate = MealDate(
-        proposal_id=proposal.id,
-        user_id_1=proposal.user_proposed_to,
-        user_id_2=proposal.user_proposed_from,
-        restaurant_name = unicode(rest['name']),
-        restaurant_addres = unicode(rest['address']),
-        restaurant_picture = rest['image']
-    )
+def create_mealdate(count_id = len(usernames) - len(usernames) + 1):
+    # Try create 4 mealdates
+    while count_id <= len(usernames):
+        print 'ID: ', count_id
+        # Users confirm proposal:
+        proposal = session.query(Proposal).filter_by(id=count_id).first()
+        request = (proposal.get_request_data)
+        # API 
+        rest = restaurant(request['meal_type'], request['location'])
+        # CHECK DATA
+        try:
+            print(color.MAGENTA + (rest['name']))
+            print(unicode(rest['address']))
+            print(str(rest['image']))
+            if proposal.user_proposed_to == proposal.user_proposed_from:
+                print(color.RED+'Same ID')
+            # Creating mealdate!
+            else:
+                mealdate = MealDate(
+                    proposal_id=proposal.id,
+                    user_id_1=proposal.user_proposed_to,
+                    user_id_2=proposal.user_proposed_from,
+                    restaurant_name = unicode(rest['name']),
+                    restaurant_addres = unicode(rest['address']),
+                    restaurant_picture = rest['image']
+                )
 
-    session.add(mealdate)
-    session.commit()
+            session.add(mealdate)
+            session.commit()
+
+        except TypeError:
+                print(color.RED+'No Restaurants Found for address')
+
+        count_id+=1
+
     return True
 
 def assert_mealdate():
     # willy_chessy mealdate
     user = session.query(User).filter_by(username=usernames[2][0]).first()
     mealdate = session.query(MealDate).filter_by(user_id_2=user.id).first()
-    print mealdate.get_meal_time
+    print(color.LIGHTWHITE_EX+str(mealdate.get_meal_time))
 
 if __name__ == '__main__':
     print(color.LIGHTGREEN_EX + 'TEST FOR MODELS OF MEET AND MEAN').center(85)
-    #time.sleep(2)
+    time.sleep(2)
     #add_user()
+    #all_user()
     #assert_user()
     #create_request()
     #all_requests()
-    #create_proposal()
+    #create_proposal(query_mealtype)
     #create_mealdate()
     #assert_mealdate()
-    all_user()

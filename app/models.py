@@ -4,12 +4,14 @@ from sqlalchemy.dialects.sqlite import DATETIME
 from sqlalchemy.orm import relationship, sessionmaker
 from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
+from config import BASE_DIR
+import os
 import random, string
 
 
 Base = declarative_base()
 
-engine = create_engine('sqlite:///meet_n_eat.db'); DBSession = sessionmaker(bind=engine); session = DBSession()
+engine = create_engine('sqlite:///{}'.format(os.path.join(BASE_DIR, 'app.db'))); DBSession = sessionmaker(bind=engine); session = DBSession()
 
 secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
 

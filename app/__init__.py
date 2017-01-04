@@ -14,8 +14,7 @@ app.config.from_object(DevelopmentConfig)
 csrf = CsrfProtect()
 assets = Environment(app)
 create_assets(assets)
-
-
 csrf.init_app(app)
+Base.metadata.create_all(engine)
 
 from app import models, views, config, assets

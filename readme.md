@@ -29,3 +29,8 @@ Run server:
 python run.py
 
 ```
+Create data:
+```python
+python model_tester.py
+
+```
