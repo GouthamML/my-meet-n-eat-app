@@ -1,6 +1,7 @@
 # coding=utf-8
 from flask import Flask
 from flask_wtf import CsrfProtect
+from flask_login import LoginManager
 from config import DevelopmentConfig
 from models import Base, engine
 from assets import create_assets
@@ -11,6 +12,9 @@ from sqlalchemy_utils import database_exists, create_database
 
 app = Flask(__name__)
 app.config.from_object(DevelopmentConfig)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
 csrf = CsrfProtect()
 assets = Environment(app)
 create_assets(assets)

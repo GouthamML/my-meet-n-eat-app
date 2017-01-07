@@ -6,23 +6,17 @@ from sqlalchemy import create_engine, or_, and_
 from datetime import datetime, time
 from flask_httpauth import HTTPBasicAuth
 from oauth import OAuthSignIn
+from flask_login import login_required, login_user, logout_user, current_user
 from flask import session as login_session
-from utils import auth, verify_password
-from . import app
+from utils import auth, verify_password, load_user
+from forms import LoginForm, RegisterForm
+from . import app, login_manager
 
 
-@app.after_request
-def add_header(r):
-    """
-    Add headers to both force latest IE rendering engine or Chrome Frame,
-    and also to cache the rendered page for 10 minutes.
-    """
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
-
+@app.before_request
+def before_request():
+    g.user = current_user
+    
 
 @app.route('/')
 @app.route('/index')
@@ -34,11 +28,55 @@ def index():
                       login_session=login_session)
 
 
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
+    print 'LLLLL'
     if login_session.get('username') :
         return redirect(url_for('index'))
-    return render_template('login.html', user_authenticated=False)
+    form = LoginForm(request.form)
+    if request.method == 'POST' and form.validate():
+        username = form.username.data
+        password = form.password.data
+        registered_user = session.query(User). \
+                          filter_by(username=username).first()
+        if registered_user is None or not registered_user.verify_password(password):
+            flash('Username or Password is invalid' , 'error')
+            return redirect(url_for('login'))
+        login_user(registered_user) #flask login
+        login_session['username'] = registered_user.username
+        login_session['picture'] = registered_user.picture
+        login_session['email'] = registered_user.email
+        login_session['id'] = registered_user.id
+        flash('Logged in successfully')
+        return redirect(request.args.get('next') or url_for('index'))
+
+    return render_template('login.html',
+                            user_authenticated=False,
+                            formlogin=form,
+                            formregister=RegisterForm(request.form))
+
+@app.route('/register' , methods=['GET','POST'])
+def register():
+    form = RegisterForm(request.form)
+    if request.method == 'POST' and form.validate():
+        user = User(username=form.username.data, email=form.email.data)
+        user.hash_password(form.password.data)
+        session.add(user)
+        session.commit()
+        flash('User successfully registered')
+    else:
+        flash('Invalid data')
+        return redirect(url_for('login'))
+
+    return redirect(url_for('login'))
+ 
+ 
+@app.route('/logout', methods = ['GET'])
+def logout():
+    print 'LOGOU'
+    logout_user()
+    g.user = None
+    return redirect(url_for('login')) 
 
 
 @app.route('/oauth/<provider>')
@@ -58,6 +96,7 @@ def oauth_callback(provider):
         membership = OAuthMembership(provider = provider, provider_userid = social_id, user = user)
         session.add(membership)
         session.commit()
+        login_user(user)
     login_session['username'] = user.username
     login_session['picture'] = user.picture
     login_session['email'] = user.email
@@ -75,12 +114,7 @@ def get_auth_token():
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
-
-@app.route('/logout', methods = ['GET'])
-def logout():
-    g.user = None
-    return redirect(url_for('index'))
-
+# Handling Error - - - - - - - - - - - - - - - - - - - - - - - 
 @auth.error_handler
 def unauthorized():
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
@@ -97,7 +131,7 @@ def notauthorized(error):
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
 
 
-# ==================api
+#  API - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
 @app.route('/api/v1/logout', methods = ['GET'])

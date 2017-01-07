@@ -4,6 +4,7 @@ from sqlalchemy.dialects.sqlite import DATETIME
 from sqlalchemy.orm import relationship, sessionmaker
 from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
+from flask_login import UserMixin
 from config import BASE_DIR
 import os
 import random, string
@@ -24,7 +25,7 @@ class BaseModel(Base):
                                            onupdate=func.current_timestamp())
 
 
-class User(BaseModel):
+class User(BaseModel, UserMixin):
     __tablename__ = 'user'
     username = Column(String(32), index=True)
     picture = Column(String)

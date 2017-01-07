@@ -157,8 +157,7 @@ def create_mealdate(count_id = len(usernames) - len(usernames) + 1):
 
     return True
 
-def assert_mealdate():
-    # willy_chessy mealdate
+def get_mealdate():
     user = session.query(User).filter_by(username=usernames[2][0]).first()
     mealdate = session.query(MealDate).filter_by(user_id_2=user.id).first()
     print(color.LIGHTWHITE_EX+str(mealdate.get_meal_time))
@@ -173,4 +172,4 @@ if __name__ == '__main__':
     #all_requests()
     #create_proposal(query_mealtype)
     #create_mealdate()
-    #assert_mealdate()
+    #get_mealdate()

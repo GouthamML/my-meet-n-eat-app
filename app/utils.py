@@ -1,10 +1,13 @@
 from models import *
 from flask import g
+from . import login_manager
 from flask_httpauth import HTTPBasicAuth
 
 auth = HTTPBasicAuth()
 
-
+@login_manager.user_loader
+def load_user(id):
+    return session.query(User).get(int(id))
 
 @auth.verify_password
 def verify_password(username_or_token, password):

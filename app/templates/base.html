@@ -79,8 +79,17 @@
 
   <main class="mdl-layout__content">
     <div class="page-content">
-          {% block content %}
-          {% endblock %}
+
+    {% for message in get_flashed_messages(with_categories=false) %}
+      <div>
+        <strong>{{ message }}!</strong>
+      </div>
+    {% endfor %}
+
+    {% block content %}
+
+    {% endblock %}
+    
     </div>
   </main>
 
@@ -90,6 +99,5 @@
     </div>
   </footer>
 </div>
-
 </body>
 </html

@@ -4,6 +4,7 @@ def create_assets(assets):
 
     js = Bundle(
         'js/material.js',
+        'js/googlebutton.js',
         filters='rjsmin',
         output='js/libs.js'
     )

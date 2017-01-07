@@ -1,0 +1,19 @@
+{% block register %}
+<br>
+<div class="mdl-grid" id='registerdiv' style="display:none;">
+  <div class="mdl-layout-spacer"></div>
+  <div class="mdl-cell mdl-cell--6-col">
+      <h1>Register now!</h1>
+      <form method="POST" action="{{url_for('register')}}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        {{formregister.username}}
+        {{formregister.email}}
+        {{formregister.confirm_email}}
+        {{formregister.password}}
+        {{formregister.confirm_password}}
+        {{formregister.submit}}
+      </form>
+  </div>
+ <div class="mdl-layout-spacer"></div>
+</div>
+{% endblock %}
