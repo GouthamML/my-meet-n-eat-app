@@ -15,5 +15,9 @@ class DevelopmentConfig(Config):
                             'secret': '1vq9zxw2rMiBtUVeLlAlNOVw'
                         }
                         }
-    ASSETS_DEBUG = False
+    ASSETS_DEBUG = True
     TEMPLATES_AUTO_RELOAD = True
+    UPLOADS_DEFAULT_DEST = BASE_DIR+'/static/img/profile/'
+    UPLOADS_DEFAULT_URL = 'http://0.0.0.0:8000/register'
+    UPLOADED_PHOTOS_DEST = BASE_DIR+'/static/img/profile/'
+    UPLOADED_PHOTOS_URL = 'http://0.0.0.0:8000/register'

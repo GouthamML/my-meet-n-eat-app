@@ -25,6 +25,7 @@ setup(
         'rauth',
         'flask-assets',
         'itsdangerous',
+        'foursquare',
         'passlib',
         'colorama'
     ],

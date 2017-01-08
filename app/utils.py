@@ -1,5 +1,5 @@
 from models import *
-from flask import g
+from flask import g, flash
 from . import login_manager
 from flask_httpauth import HTTPBasicAuth
 
@@ -21,3 +21,11 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
+def flash_errors(form):
+    for field, errors in form.errors.items():
+        for error in errors:
+            flash(u"Error in the %s field - %s" % (
+                getattr(form, field).label.text,
+                error
+            ))

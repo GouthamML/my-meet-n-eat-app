@@ -1,8 +1,8 @@
 import httplib2
 import simplejson as json
 
-try: 
-    foursquare_client_id = json.loads(
+try:
+    google_api_key = json.loads(
         open('google_maps.json', 'r').read())['geocoding']['key']
 except IOError:
     google_api_key = "AIzaSyB0sqYi14-q7hMIHeZluGLCGZKxIETxIHY"

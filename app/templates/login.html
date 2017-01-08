@@ -2,33 +2,42 @@
 {% block content %}
 
 <div class="mdl-grid">
-  <div class="mdl-layout-spacer">
-  </div>
     <div class="mdl-cell mdl-cell--4-col">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
             <a data-device="desktop" data-name="google" data-redirect="{{ url_for('index') }}" id='js-google-oauth-login' href="{{ url_for('oauth_authorize', provider='google') }}">Login with Google</a>
         </button>
-    </div>
-  <div class="mdl-cell mdl-cell--4-col">
-      <h1>Login with your account!</h1>
-      <form method="POST" action="{{url_for('login')}}">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-      {{formlogin.username}}
-      {{formlogin.password}}
-      {{formlogin.submit}}
-      </form>
-  </div>
-</div>
-<button class="mdl-button mdl-button--raised" id="registeractive">Register in here!</button>
+        <button class="mdl-button mdl-button--raised" id="registeractive">Register in here!</button>
 
+    </div>
     {% include  'register.html' %}
     {% block register %}
     {% endblock%}
+  <div class="mdl-cell mdl-cell--4-col" id="loginactive">
+      <h1>Login with your account!</h1>
+      <form method="POST" action="{{url_for('login')}}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <!-- Textfield with Floating Label -->
+
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            {{formlogin.username(class_ ='mdl-textfield__input')}}
+            <label class="mdl-textfield__label" for="sample3">Username...</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            {{formlogin.password(class_ ='mdl-textfield__input')}}
+            <label class="mdl-textfield__label" for="sample3">Password...</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            {{formlogin.submit(class_ ='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect')}}
+        </div>
+      </form>
+  </div>
+</div>
 
 <script>
     var register = document.getElementById('registeractive');
     register.onclick = function() {
     document.getElementById('registerdiv').style.display = "block";
+    document.getElementById('loginactive').style.display = "none";
     }
 </script>
 {% endblock %}

@@ -8,15 +8,15 @@ from flask_httpauth import HTTPBasicAuth
 from oauth import OAuthSignIn
 from flask_login import login_required, login_user, logout_user, current_user
 from flask import session as login_session
-from utils import auth, verify_password, load_user
+from utils import auth, verify_password, load_user, flash_errors
 from forms import LoginForm, RegisterForm
-from . import app, login_manager
+from . import app, login_manager, profile_photo
 
 
 @app.before_request
 def before_request():
     g.user = current_user
-    
+
 
 @app.route('/')
 @app.route('/index')
@@ -30,7 +30,6 @@ def index():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    print 'LLLLL'
     if login_session.get('username') :
         return redirect(url_for('index'))
     form = LoginForm(request.form)
@@ -58,24 +57,32 @@ def login():
 @app.route('/register' , methods=['GET','POST'])
 def register():
     form = RegisterForm(request.form)
-    if request.method == 'POST' and form.validate():
+    if request.method == 'POST':
         user = User(username=form.username.data, email=form.email.data)
         user.hash_password(form.password.data)
         session.add(user)
         session.commit()
+        if 'profile_photo' in request.files:
+            filename = profile_photo.save(request.files['profile_photo'])
+            url = profile_photo.url(filename)
+            newprofilephoto = ProfileImage(user_id=user.id,
+                                           image_filename=filename,
+                                           image_url=url)
+            session.add(newprofilephoto)
+            session.commit()
         flash('User successfully registered')
     else:
-        flash('Invalid data')
+        flash_errors(form)
         return redirect(url_for('login'))
 
     return redirect(url_for('login'))
- 
- 
+
+
 @app.route('/logout', methods = ['GET'])
 def logout():
-    print 'LOGOU'
     logout_user()
     g.user = None
+    login_session.clear()
     return redirect(url_for('login')) 
 
 

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine, Float, func
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine, Float, func, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.sqlite import DATETIME
 from sqlalchemy.orm import relationship, sessionmaker
@@ -68,6 +68,13 @@ class User(BaseModel, UserMixin):
             "username": self.username,
             "picture" : self.picture
             }
+
+
+class ProfileImage(BaseModel):
+    __tablename__= 'image_profile'
+    user_id =  Column(Integer, ForeignKey('user.id'))
+    image_filename = Column(String, default=None, nullable=True)
+    image_url = Column(String, default=None, nullable=True)
 
 
 class OAuthMembership(Base):
@@ -221,6 +228,3 @@ class MealDate(BaseModel):
                         error = dict({ value: "Required" })
                         errors.append(error)
         return errors
-
-
-Base.metadata.create_all(engine)

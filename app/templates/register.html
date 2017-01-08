@@ -1,19 +1,35 @@
 {% block register %}
-<br>
-<div class="mdl-grid" id='registerdiv' style="display:none;">
-  <div class="mdl-layout-spacer"></div>
-  <div class="mdl-cell mdl-cell--6-col">
+  <div class="mdl-cell mdl-cell--4-col" id='registerdiv' style="display:none;">
       <h1>Register now!</h1>
-      <form method="POST" action="{{url_for('register')}}">
+      <form method="POST" enctype=multipart/form-data action="{{url_for('register')}}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        {{formregister.username}}
-        {{formregister.email}}
-        {{formregister.confirm_email}}
-        {{formregister.password}}
-        {{formregister.confirm_password}}
-        {{formregister.submit}}
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+           {{formregister.username(class_ ='mdl-textfield__input', value='carlosjazz')}}
+           <label class="mdl-textfield__label" for="sample3">{{formregister.username.label}}</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+           {{formregister.password(class_ ='mdl-textfield__input')}}
+           <label class="mdl-textfield__label" for="sample3">{{formregister.password.label}}</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+           {{formregister.confirm_password(class_ ='mdl-textfield__input')}}
+           <label class="mdl-textfield__label" for="sample3">{{formregister.confirm_password.label}}</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+           {{formregister.email(class_ ='mdl-textfield__input', value='carlosjazzc1@gmail.com')}}
+           <label class="mdl-textfield__label" for="sample3">{{formregister.email.label}}</label>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+           {{formregister.confirm_email(class_ ='mdl-textfield__input',  value='carlosjazzc1@gmail.com')}}
+           <label class="mdl-textfield__label" for="sample3">{{formregister.confirm_email.label}}</label>
+        </div>
+           {{formregister.profile_photo}}
+           <hr>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <button type="submit" name='submit' class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+          Submit
+        </button>
+      </div>
       </form>
   </div>
- <div class="mdl-layout-spacer"></div>
-</div>
 {% endblock %}
