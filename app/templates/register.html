@@ -4,7 +4,7 @@
       <form method="POST" enctype=multipart/form-data action="{{url_for('register')}}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-           {{formregister.username(class_ ='mdl-textfield__input', value='carlosjazz')}}
+           {{formregister.username(class_ ='mdl-textfield__input')}}
            <label class="mdl-textfield__label" for="sample3">{{formregister.username.label}}</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -16,15 +16,15 @@
            <label class="mdl-textfield__label" for="sample3">{{formregister.confirm_password.label}}</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-           {{formregister.email(class_ ='mdl-textfield__input', value='carlosjazzc1@gmail.com')}}
+           {{formregister.email(class_ ='mdl-textfield__input')}}
            <label class="mdl-textfield__label" for="sample3">{{formregister.email.label}}</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-           {{formregister.confirm_email(class_ ='mdl-textfield__input',  value='carlosjazzc1@gmail.com')}}
+           {{formregister.confirm_email(class_ ='mdl-textfield__input')}}
            <label class="mdl-textfield__label" for="sample3">{{formregister.confirm_email.label}}</label>
         </div>
            {{formregister.profile_photo}}
-           <hr>
+           <hr><br>
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
         <button type="submit" name='submit' class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
           Submit

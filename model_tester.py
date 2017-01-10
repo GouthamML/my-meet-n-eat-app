@@ -166,7 +166,7 @@ if __name__ == '__main__':
     print(color.LIGHTGREEN_EX + 'TEST FOR MODELS OF MEET AND MEAN').center(85)
     time.sleep(2)
     #add_user()
-    #all_user()
+    all_user()
     #assert_user()
     #create_request()
     #all_requests()

@@ -12,10 +12,14 @@ from utils import auth, verify_password, load_user, flash_errors
 from forms import LoginForm, RegisterForm
 from . import app, login_manager, profile_photo
 
+ip = 0
 
 @app.before_request
 def before_request():
+    print remote_addr
     g.user = current_user
+    global ip
+    ip = request.headers.getlist("X-Forwarded-For")[0] if request.headers.getlist("X-Forwarded-For") else request.remote_addr
 
 
 @app.route('/')
@@ -41,9 +45,10 @@ def login():
         if registered_user is None or not registered_user.verify_password(password):
             flash('Username or Password is invalid' , 'error')
             return redirect(url_for('login'))
+        image = session.query(ProfileImage).filter_by(user_id=registered_user.id).first()
         login_user(registered_user) #flask login
         login_session['username'] = registered_user.username
-        login_session['picture'] = registered_user.picture
+        login_session['picture'] = '../'+str(image.image_url)
         login_session['email'] = registered_user.email
         login_session['id'] = registered_user.id
         flash('Logged in successfully')
@@ -59,15 +64,20 @@ def register():
     form = RegisterForm(request.form)
     if request.method == 'POST':
         user = User(username=form.username.data, email=form.email.data)
+        query_validate_username = session.query(User).filter_by(username=form.username.data).first()
+        query_validate_email = session.query(User).filter_by(email=form.email.data).first()
+        if query_validate_username is not None or query_validate_email is not None:
+            uri_parameters = 'invalid'
+            flash('That dates in use')
+            return redirect(url_for('login', error=uri_parameters))
         user.hash_password(form.password.data)
         session.add(user)
         session.commit()
         if 'profile_photo' in request.files:
             filename = profile_photo.save(request.files['profile_photo'])
-            url = profile_photo.url(filename)
             newprofilephoto = ProfileImage(user_id=user.id,
                                            image_filename=filename,
-                                           image_url=url)
+                                           image_url='static/img/profile/'+filename)
             session.add(newprofilephoto)
             session.commit()
         flash('User successfully registered')
@@ -103,9 +113,9 @@ def oauth_callback(provider):
         membership = OAuthMembership(provider = provider, provider_userid = social_id, user = user)
         session.add(membership)
         session.commit()
-        login_user(user)
+    login_user(user)
     login_session['username'] = user.username
-    login_session['picture'] = user.picture
+    login_session['picture'] = picture # wtf
     login_session['email'] = user.email
     login_session['id'] = user.id
 
@@ -121,7 +131,10 @@ def get_auth_token():
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
+
 # Handling Error - - - - - - - - - - - - - - - - - - - - - - - 
+
+
 @auth.error_handler
 def unauthorized():
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)

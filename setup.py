@@ -19,6 +19,7 @@ setup(
         'flask>=0.10',
         'sqlalchemy',
         'Flask-HTTPauth',
+        'flask-login',
         'oauth',
         'redis',
         'simplejson',
@@ -27,7 +28,10 @@ setup(
         'itsdangerous',
         'foursquare',
         'passlib',
-        'colorama'
+        'colorama',
+        'geoip',
+        'python-geoip-geolite2',
+        'win_inet_pton'
     ],
     classifiers=[
         'Environment :: Web Environment',

@@ -9,6 +9,7 @@ Requeriments:
 
 * Flask
 * Flask-HTTPauth
+* flask-login
 * SQLAlchemy
 * simplejson
 * colorama
@@ -18,6 +19,9 @@ Requeriments:
 * itsdangerous
 * passlib
 * flask-assets
+* geoip
+* python-geoip-geolite2
+* win_inet_pton
 
 ------------------------
 Install Requeriments:
