@@ -149,14 +149,14 @@ def create_request():
                           longitude=geolocation[1])
         session.add(newrequest)
         session.commit()
+        date_request = parse_datetime(year=form.year.data, month=form.month.data, day=form.day.data)
+        if date_request == None:
+            flash('Date no valid...')
+            return redirect(url_for('index'))
         newrequestdate = DateTimeRequest(
                             request=newrequest.id,
                             mealtime=form.meal_time.data,
-                            date=parse_datetime(
-                                year=form.year.data,
-                                month=form.month.data,
-                                day=form.day.data
-                            ))
+                            date=date_request)
         session.add(newrequestdate)
         session.commit()
         flash('Succefully!')

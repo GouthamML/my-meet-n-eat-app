@@ -19,3 +19,11 @@ def create_assets(assets):
     )
 
     assets.register('css_material', css)
+
+    angular = Bundle(
+        'angular/angular.js',
+        'angular/app.js',
+        filters='rjsmin',
+        output='js/libs.js'
+    )
+    assets.register('js_angular', angular)

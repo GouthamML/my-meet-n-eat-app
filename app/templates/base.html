@@ -6,8 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
-      rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
+    {% assets "js_angular" %}
+    <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
     {% assets "css_material" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
     {% endassets %}
@@ -15,11 +18,14 @@
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
 </head>
-<body>
+<body ng-app="flask_app">
  <!-- Uses a header that contracts as the page scrolls down. -->
 <style>
 .demo-layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type  {
   padding-right: 0;
+}
+.mdl-layout__header {
+  height: 10% !important;
 }
 </style>
 <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.brown-amber.min.css" />
@@ -100,6 +106,12 @@
       <li><a href="#">Privacy & Terms</a></li>
     </ul>
   </div>
+  <div class="mdl-layout-spacer"></div>
+  <a href="http://flask.pocoo.org/" style="float:right;"><img
+   src="http://flask.pocoo.org/static/badges/i-wish.png"
+   border="0"
+   alt="I wish this site were Flask powered"
+   title="I wish this site were Flask powered"></a>
 </footer>
 </div>
 </body>

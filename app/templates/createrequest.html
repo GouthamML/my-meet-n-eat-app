@@ -1,8 +1,6 @@
 {% block request %}
-<div class="mdl-color-text--teal-A700 mdl-cell mdl-cell--4-col" 
- id='requestdiv' style="display:none;">
- <span style="border: 2px solid black;">X</span> 
-    <h4>Create Request!</h4><hr>
+<div class="mdl-color-text--teal-A700 mdl-cell mdl-cell--4-col" ng-show='request'>
+    <h4>Request</h4>
     <form method="POST" action="{{ url_for('create_request') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
