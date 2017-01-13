@@ -1,5 +1,8 @@
 from wtforms import *
-from wtforms.fields.html5 import EmailField, DateTimeField
+from wtforms.fields.html5 import EmailField
+from wtforms_components import TimeField
+import datetime
+import calendar
 from . import profile_photo
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -41,7 +44,13 @@ class LoginForm(SuperForm):
 
 
 
-class Request(SuperForm):
-    meal_type = StringField('',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=3, message='Min 5 letter, Try Again')])
-    location_string = PasswordField('', [validators.DataRequired(message='El campo esta vacio.')])
-    meal_time = DateTimeField('Time', [validators.DataRequired(message='El campo esta vacio.')])
+class RequestForm(SuperForm):
+    a = list(range(1, 32))
+    c = map(str, list(range(1, len(calendar.month_name))))
+
+    meal_type = StringField('Example: Coffee or Donuts',   [validators.DataRequired(message='El campo esta vacio.'), validators.length(min=3, message='Min 5 letter, Try Again')])
+    location_string = StringField('Location', [validators.DataRequired(message='El campo esta vacio.')])
+    meal_time = SelectField('year', choices=[('breakfast', 'Breakfast'), ('lunch', 'Lunch'), ('afternoon snack', 'Afternoon snack'), ('dinner', 'Dinner')])
+    year = SelectField('year', choices=[('2017', '2017'), ('2018', '2018')])
+    month = SelectField('month', choices=zip(c, list(calendar.month_name)[1:]))
+    day = SelectField('day', choices=zip(map(str, a), a))

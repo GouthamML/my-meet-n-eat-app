@@ -1,4 +1,4 @@
-import foursquare
+import foursquare, random
 import simplejson as json
 import pycountry
 from geoip import geolite2
@@ -8,6 +8,8 @@ from geocode import getGeocodeLocation
 
 # Construct the client object
 client = foursquare.Foursquare(client_id='EXNP1PMGAF5XRDLQRXVTNUNG511YYDSBUFM2PEZXJEF0T0FY', client_secret='IGK5EP2XPEYFCQ0FZ0UFMZ5XBXI5DZ5RQ3EBH0IBXW15UENB', version='20130815')
+
+query_mealtype = ['donuts', 'pizza', 'burguer', 'coffee', 'seafood']
 
 def get_country(request_ip):
     math = geolite2.lookup(request_ip) if geolite2.lookup(request_ip) is not None else geolite2.lookup_mine()
@@ -21,7 +23,9 @@ def get_country(request_ip):
 
 countryvenues = get_country('127.0.0.1')
 
-def venues(stringlocation, mealtype, limit=6):
+def venues(stringlocation, mealtype=None, limit=6):
+    if mealtype is None:
+        mealtype = random.choice(query_mealtype)
     ll = getGeocodeLocation(stringlocation, None)
     ownvenue = client.venues.search(params={'limit': limit, 'll': ll, 'query': mealtype})
     p = ownvenue['venues']
@@ -34,17 +38,17 @@ def venues(stringlocation, mealtype, limit=6):
         photo = photo['photos']
         this['name'] =  n['name']
         try : this['url'] = n['url']
-        except: print 'No have url'
+        except:  'No have url'
         try: this['location'] = n['location']['formattedAddress'][0]
-        except: print 'No have location'
+        except:  'No have location'
         try: this['menu_url'] = n['menu']['url']
-        except: print 'No have Menu'
+        except:  'No have Menu'
         try:
             for h in hours['timeframes']:
                 this['days'] =  h['days']
                 this['open'] =  h['open']
         except:
-            print 'No Have Timeframes'
+            'No Have Timeframes'
 
         try:
             for p in photo['items']:
@@ -53,11 +57,7 @@ def venues(stringlocation, mealtype, limit=6):
                 imageURL = prefix + "300x300" + suffix
                 this['picture'] = imageURL
         except:
-            print 'No have image'
+            'No have image'
 
         result.append(this)
     return result
-
-json_venue = venues(countryvenues, 'pizza')
-
-print json_venue

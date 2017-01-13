@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% from "_macrovenues.html" import rendervenues with context %}
+
 {% block content %}
 <style>
 .inputbg{
@@ -7,8 +9,18 @@
     -webkit-background-size: container;
     background-size: container;
 }
+.demo-card-wide.mdl-card {
+  width: 512px;
+}
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
+}
 </style>
-<div class="inputbg">
+<div class="inputbg" style="height:500px;">
 <div class="mdl-grid">
     <div class="mdl-cell mdl-cell--4-col">
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
@@ -27,22 +39,23 @@
 
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             {{formlogin.username(class_ ='mdl-textfield__input')}}
-            <label class="mdl-textfield__label" for="sample3">Username...</label>
+            <label class="mdl-textfield__label">Username...</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             {{formlogin.password(class_ ='mdl-textfield__input')}}
-            <label class="mdl-textfield__label" for="sample3">Password...</label>
+            <label class="mdl-textfield__label">Password...</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             {{formlogin.submit(class_ ='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect')}}
         </div>
       </form>
   </div>
-</div><hr>
+</div>
 <div class="mdl-grid">
-  <div class="mdl-cell mdl-cell--6-col mdl-cell--8-col-tablet">6 (8 tablet)</div>
-  <div class="mdl-cell mdl-cell--4-col mdl-cell--6-col-tablet">4 (6 tablet)</div>
-  <div class="mdl-cell mdl-cell--2-col mdl-cell--4-col-phone">2 (4 phone)</div>
+
+    {#rendervenues(venues1)#}
+    {#rendervenues(venues2)#}
+
 </div>
 </div>
 <script>

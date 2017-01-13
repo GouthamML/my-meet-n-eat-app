@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Enum, create_engine, Float, func, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.dialects.sqlite import DATETIME
+from sqlalchemy.dialects.sqlite import DATE, TIME, DATETIME
 from sqlalchemy.orm import relationship, sessionmaker
 from itsdangerous import(TimedJSONWebSignatureSerializer as Serializer, BadSignature, SignatureExpired)
 from passlib.apps import custom_app_context as pwd_context
@@ -101,7 +101,6 @@ class Request(BaseModel):
     location_string = Column(String)
     latitude = Column(Float)
     longitude = Column(Float)
-    meal_time = Column(DATETIME)
     filled = Column(Boolean, unique=False, default=False)
 
     @property
@@ -113,8 +112,7 @@ class Request(BaseModel):
          "meal_type": self.meal_type,
          "longitude": self.longitude,
          "latitude": self.latitude,
-         "location_string": self.location_string,
-         "meal_time": self.meal_time,
+         "location_string": self.location_string
          }
 
     @staticmethod
@@ -134,6 +132,12 @@ class Request(BaseModel):
                         error = dict({ value: "Required" })
                         errors.append(error)
         return errors
+
+class DateTimeRequest(BaseModel):
+    __tablename__='datetimemeal'
+    request = Column(Integer, ForeignKey('request.id'))
+    mealtime = Column(Enum('breakfast', 'lunch', 'afternoon snack', 'dinner'))
+    date = Column(DATE)
 
 
 class Proposal(BaseModel):
@@ -195,7 +199,8 @@ class MealDate(BaseModel):
     @property
     def get_meal_time(self):
         p = session.query(Proposal).filter_by(id=self.proposal_id).first()
-        p = session.query(Request).filter_by(id=p.request_id).first()
+        p = session.query(DateTimeMeal).filter_by(id=p.request_id).first()
+        # Crear funcion que retorne el formato adecuado @property
         return p.meal_time
 
     @property

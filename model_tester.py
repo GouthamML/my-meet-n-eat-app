@@ -77,7 +77,6 @@ def create_request():
          location_string=country,
          latitude=geolocation(country)[0],
          longitude=geolocation(country)[1],
-         meal_time=datetime.now(),
          filled=False)
     session.add(request)
     session.commit()
@@ -87,6 +86,7 @@ def create_request():
 def all_requests():
     all_request = session.query(Request).all()
     for i in all_request:
+        datetime = session.query(DateTimeRequest).filter_by(request=i.id).first()
         print(color.LIGHTCYAN_EX + '---------------')
         print(color.BLUE + str(i.id))
         print(i.user_id)
@@ -94,8 +94,8 @@ def all_requests():
         print(i.location_string)
         print(i.latitude)
         print(i.longitude)
-        print(i.meal_time)
         print(i.filled)
+        print datetime.date, datetime.mealtime
     return True
 
 
@@ -164,12 +164,13 @@ def get_mealdate():
 
 if __name__ == '__main__':
     print(color.LIGHTGREEN_EX + 'TEST FOR MODELS OF MEET AND MEAN').center(85)
-    time.sleep(2)
+    #time.sleep(2)
     #add_user()
-    all_user()
+    #all_user()
     #assert_user()
     #create_request()
-    #all_requests()
+    all_requests()
+    #all_daterequest()
     #create_proposal(query_mealtype)
     #create_mealdate()
     #get_mealdate()

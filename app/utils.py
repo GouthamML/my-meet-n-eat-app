@@ -29,3 +29,11 @@ def flash_errors(form):
                 getattr(form, field).label.text,
                 error
             ))
+
+def parse_datetime(year, month, day):
+    import datetime
+    year = int(year); month = int(month); day = int(day)
+    r = datetime.date(year, month,day)
+    return  r
+
+#print parse_datetime(2000, 7, 2)
