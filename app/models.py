@@ -106,19 +106,23 @@ class Request(BaseModel):
     @property
     def serialize(self):
          """Return object data in easily serializeable format"""
+         request_datetime = session.query(DateTimeRequest).filter_by(request = self.id).first()
+
          return {
          "id" : self.id,
          "filled": self.filled,
          "meal_type": self.meal_type,
          "longitude": self.longitude,
          "latitude": self.latitude,
-         "location_string": self.location_string
+         "location_string": self.location_string,
+         "meal_time": request_datetime.mealtime,
+         "date": str(request_datetime.date)
          }
 
     @staticmethod
     def validate(data):
         errors = []
-        required_fields = ['meal_type','longitude', 'latitude', 'location_string', 'meal_time']
+        required_fields = ['meal_type','longitude', 'latitude', 'location_string']
         if type(data) != dict:
             error = dict({"Missing required parameters":" ".format(', '.join(required_fields))})
             errors.append(error)

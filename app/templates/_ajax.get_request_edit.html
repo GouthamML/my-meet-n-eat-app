@@ -1,0 +1,37 @@
+{% block ajaxget %}
+<script>
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        })
+
+        $('.ajax_edit_request').click(function(){
+          $.ajax({
+                  type: "GET",
+                  url: "/request/edit/values",
+                  data: { id: $(this).attr('id-request') },
+                  //contentType:"application/json",
+                  dataType: "json"
+          })
+            .done(function(response) {
+                console.log( "success", response.meal);
+                $('.ajax_meal_type').val(response.meal.meal_type);
+                $('.ajax_location').val(response.meal.location_string);
+                $('.ajax_meal_time').val(response.meal.meal_time);
+                $('.ajax_date').val(response.meal.date);
+                $('#submit_edit_request').attr('request-id', response.meal.id);
+            })
+            .fail(function() {
+                console.log( "error" );
+            })
+            .always(function() {
+                console.log( "complete" );
+            });
+        });
+    </script>
+{% endblock %}

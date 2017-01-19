@@ -1,5 +1,6 @@
 from models import *
 from flask import jsonify, request, url_for, abort, g, redirect, render_template, flash, make_response
+import simplejson as json
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
 from sqlalchemy import create_engine, or_, and_
@@ -27,10 +28,16 @@ def before_request():
 def index():
     if not login_session.get('username') :
         return redirect(url_for('login'))
+
+    request_user = session.query(Request, DateTimeRequest). \
+    filter(Request.user_id==login_session['id']). \
+    filter(DateTimeRequest.request==Request.id).all()
+
     return render_template('index.html',
                       user_authenticated=True,
                       login_session=login_session,
-                      request=RequestForm(request.form))
+                      request=RequestForm(request.form),
+                      request_user=request_user)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -140,8 +147,8 @@ def get_auth_token():
 @app.route('/create_request', methods = ['GET', 'POST'])
 def create_request():
     form = RequestForm(request.form)
-    geolocation = getGeocodeLocation(form.location_string.data)
     if request.method == 'POST' and form.validate():
+        geolocation = getGeocodeLocation(form.location_string.data)
         newrequest = Request(user_id=login_session['id'],
                           meal_type=form.meal_type.data,
                           location_string=form.location_string.data,
@@ -164,9 +171,50 @@ def create_request():
     flash_errors(form)
     return redirect(url_for('index'))
 
+@app.route('/request/delete/<int:id>', methods=['GET', 'POST'])
+def delete_request(id):
+    user = g.user
+    r = session.query(Request).filter_by(id = id).first()
+    d = session.query(DateTimeRequest).filter_by(request = r.id).first()
+    session.delete(r)
+    session.delete(d)
+    session.commit()
+    return redirect(url_for('index'))
+
+@app.route('/request/edit', methods=['POST'])
+def request_edit():
+    # BUG CON LOS REQUEST DATETIMES 
+    if request.method == "POST":
+        data = json.loads(request.data)
+        print data.values()
+        dt, lc, id, tm, tp = data.values()
+        print 'REQUEST ::::::::> ', id, tp, lc, tm, dt
+
+        model_request = session.query(Request).filter_by(id = id).first()
+        model_request_datetime = session.query(DateTimeRequest).filter_by(request = model_request.id).first()
+        model_request.meal_type = tp
+        model_request.location = lc
+        model_request_datetime.meal_time = tm
+        model_request_datetime.meal_date = dt
+
+        session.add(model_request)
+        session.add(model_request_datetime)
+        session.commit()
+
+    return redirect(url_for('index'))
+
+@app.route('/request/edit/values', methods=['GET', 'POST'])
+def values_form_edit_request():
+        if request.method == "GET":
+            request_id = request.args.get('id')
+            print request_id
+            r = session.query(Request).filter_by(id = request_id).first()
+            #print r.serialize
+            return json.dumps({'status':'OK',
+                                'meal': r.serialize
+                              });
 
 # Handling Error - - - - - - - - - - - - - - - - - - - - - - - 
-
 
 @auth.error_handler
 def unauthorized():

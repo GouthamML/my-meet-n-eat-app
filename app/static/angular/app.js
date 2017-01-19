@@ -10,8 +10,7 @@ app.controller('loginview', function($scope){
   $scope.login = true;
   $scope.action_string = 'Register!';
 
-
-  $scope.action = function(){
+  $scope.action  = () => {
     $scope.register = !$scope.register;
     if ($scope.register === true){
       $scope.login = false;
@@ -28,13 +27,31 @@ app.controller('loginview', function($scope){
 app.controller('requestview', function($scope){
   $scope.request = false;
   $scope.action_string = 'Create Request';
+  $scope.table = false;
+  $scope.request_table_string = 'Me Requests';
+  $scope.edit = false;
+  $scope.edit_string = 'Cancel';
   
-  $scope.action = function(){
+  $scope.action = () => {
       $scope.request = !$scope.request;
-      console.log($scope.request);
       $scope.action_string = $scope.request === true
                               ? 'Cancel'
                               : 'Create Request';
     };
+
+  $scope.request_table = () => {
+      $scope.table = !$scope.table;
+      $scope.request_table_string = $scope.table === true
+                              ? 'Hide Requests'
+                              : 'Me Requests';
+  };
+
+  $scope.request_edit  = () => {
+    $scope.edit = true;
+  };
+
+  $scope.cancel = () => {
+    $scope.edit = false;
+  }
 
 });

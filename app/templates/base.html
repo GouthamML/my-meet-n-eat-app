@@ -51,37 +51,7 @@
                 </form>
       </div>
     </div>
-    <!-- Bottom row, not visible on scroll -->
-    <div class="mdl-layout__header-row">
-      <div class="mdl-layout-spacer"></div>
-      <!-- Navigation -->
-        {% if user_authenticated %}
-
-      <nav class="mdl-navigation">
-        <a class="mdl-navigation__link" href="{{ url_for('logout') }}">Logout</a>
-        <a class="mdl-navigation__link" id="createrequest">Create Request</a>
-      </nav>
-
-        {% endif %}
-
-    </div>
-  </header>            
-        {% if user_authenticated %}
-
-  <div class="mdl-layout__drawer">
-    <span class="mdl-chip mdl-chip--contact mdl-chip--deletable">
-    <img class="mdl-chip__contact" src='{{login_session['picture']}}'></img>
-    <span class="mdl-chip__text">{{login_session['username']}}</span>
-    </span>
-    <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="">{{login_session['email']}}</a>
-      <a class="mdl-navigation__link" href="">Your Request</a>
-      <a class="mdl-navigation__link" href="">Your Proposal</a>
-      <a class="mdl-navigation__link" href="">Your Meal</a>
-    </nav>
-  </div>
-        
-        {% endif %}
+  </header>
 
   <main class="mdl-layout__content">
     <div class="page-content">
@@ -92,18 +62,27 @@
       </div>
     {% endfor %}
 
+
     {% block content %}
 
     {% endblock %}
     
     </div>
   </main>
-<footer class="mdl-mini-footer">
+  <footer class="mdl-mini-footer" style="padding-top:45px">
   <div class="mdl-mini-footer__left-section">
-    <div class="mdl-logo">Meet and Eat</div>
     <ul class="mdl-mini-footer__link-list">
-      <li><a href="#">Help</a></li>
-      <li><a href="#">Privacy & Terms</a></li>
+        {% if user_authenticated %}
+        <!-- Contact Chip -->
+        <span class="mdl-chip mdl-chip--contact" style="margin-right:20px;">
+            <span class="mdl-chip__contact mdl-color--teal mdl-color-text--white">C</span>
+            <span class="mdl-chip__text">{{login_session.username}}</a></span>
+        </span>
+        <span class="mdl-chip mdl-chip--deletable">
+        <span class="mdl-chip__text">Logout</span>
+          <a href="{{ url_for('logout') }}" class="mdl-chip__action"><i class="material-icons">cancel</i></a>
+        </span>
+        {% endif %}
     </ul>
   </div>
   <div class="mdl-layout-spacer"></div>
@@ -113,6 +92,7 @@
    alt="I wish this site were Flask powered"
    title="I wish this site were Flask powered"></a>
 </footer>
+
 </div>
 </body>
 </html

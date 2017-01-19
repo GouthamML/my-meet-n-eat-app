@@ -1,0 +1,39 @@
+{% block ajaxset %}
+<script>
+        var csrftoken = $('meta[name=csrf-token]').attr('content')
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                }
+            }
+        })
+
+        $('.form-edit').on('submit', function(){
+          $.ajax({
+                  type: "POST",
+                  url: "/request/edit",
+                  data: JSON.stringify({
+                        id: $('.form-edit').attr('request-id'),
+                        meal_type: $('.ajax_meal_type').val(),
+                        location: $('.ajax_location').val(),
+                        meal_time: $('.ajax_meal_time').val(),
+                        meal_date: $('.meal_date').val()
+                  }),
+                  contentType: 'application/json;charset=UTF-8',
+          })
+         .done(function() {
+             console.log( "done!" );
+             window.location.replace("/index");
+
+         })
+         .fail(function() {
+             console.log( "error" );
+         })
+         .always(function() {
+            console.log( "complete" );
+         });
+        });
+    </script>
+{% endblock %}

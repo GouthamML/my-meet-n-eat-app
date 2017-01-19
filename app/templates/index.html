@@ -1,26 +1,104 @@
 {% extends 'base.html' %}
-
 {% block content %}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+
 <style>
 .indexbg{
-    background-image: url(../static/img/indexban.jpg);
-    background-position: center;
-    -webkit-background-size: container;
-    background-size: container
+    background-color:thistle;
+}
+.demo-card-square.mdl-card {
+  width: 300px;
+  height: 320px;
+}
+.demo-card-square > .mdl-card__title {
+  color: #AAA;
 }
 </style>
-<div ng-controller="requestview" class="indexbg" style="height:500px;">
-<div class="mdl-grid">
-    <div class="mdl-cell mdl-cell--2-col">
+<div class="mdl-grid indexbg" ng-controller="requestview" class="indexbg">  
+    <div class="mdl-cell mdl-cell--4-col">
     <!-- Colored raised button -->
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
          ng-click="action()">
          {a action_string a}
         </button>
-    </div>
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
+         ng-click="request_table()">
+         {a request_table_string a}
+        </button>
+    </div>  
     {% include  'createrequest.html' %}
     {% block request %}
     {% endblock%}
-</div>
+    <hr>
+    <div ng-show="table">     
+    <h3>Me requests:</h3><hr>
+    <div class="mdl-cell mdl-cell--6-col">
+        <table class="mdl-data-table mdl-js-data-table">
+        <thead>
+            <tr>
+            <th class="mdl-data-table__cell--non-numeric">Meal</th>
+            <th class="mdl-data-table__cell--non-numeric">Location</th>
+            <th>Meal Time</th>
+            <th>Date</th>
+            <th class="mdl-data-table__cell--non-numeric">Filled?</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for n in request_user %}
+            <tr>
+            <td class="mdl-data-table__cell--non-numeric">{{n[0].meal_type}}</td>
+            <td>{{n[0].location_string}}</td>
+            <td>{{n[1].mealtime}}</td>
+            <td>{{n[1].date}}</td>
+            <td>{{n[0].filled|string()}}</td>
+            <td>
+                <button class="mdl-button mdl-js-button mdl-button--icon">
+                    <a href="{{url_for('delete_request', id=n[0].id)}}">
+                        <i class="material-icons">delete</i>
+                    </a>
+                </button>
+            </td>
+            <td>
+                <button class="mdl-button mdl-js-button mdl-button--icon">
+                    <a ng-click="request_edit()" id-request="{{n[0].id}}" class="ajax_edit_request">
+                        <i class="material-icons">edit</i>
+                    </a>
+                </button>
+            </td>
+            </tr>
+            {#ajax_get_values(n[0].id)#}
+            {% endfor %}
+        </tbody>
+        </table>
+        </div>
+    </div>
+   <div class="mdl-cell mdl-cell--4-col"  ng-show="edit">
+        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" ng-click="cancel()">
+                {a edit_string a}
+        </button>
+        <h4>Edit Request</h4>
+        <form class="form-edit" id="submit_edit_request">
+            <div class="mdl-textfield mdl-js-textfield ">
+                <input class="mdl-textfield__input ajax_meal_type" type="text"/>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input ajax_location" type="text"/>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield">
+                <input class="mdl-textfield__input ajax_meal_time"  type="text"/>
+            </div>
+            <br>
+            <input type="date" class="ajax_date meal_date" placeholder="yyyy-MM-dd"required />
+            <br>
+            <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect">
+                    Edit!
+            </button>
+        </form>
+        </div>
+            {% include  '_ajax.get_request_edit.html' %}
+            {% block ajaxget %}{% endblock%}
+            {% include  '_ajax.set_request_edit.html' %}
+            {% block ajaxset %}{% endblock%}
 </div>  
 {% endblock %}

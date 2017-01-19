@@ -1,14 +1,14 @@
 {% block request %}
-<div class="mdl-color-text--teal-A700 mdl-cell mdl-cell--4-col" ng-show='request'>
+<div class="mdl-cell mdl-cell--4-col" ng-show='request'>
     <h4>Request</h4>
     <form method="POST" action="{{ url_for('create_request') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            {{request.meal_type(class_ ='mdl-textfield__input', value='Coffee')}}
+            {{request.meal_type(class_ ='mdl-textfield__input')}}
             <label class="mdl-textfield__label">{{request.meal_type.label}}</label>
         </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            {{request.location_string(class_ ='mdl-textfield__input', value='Venezuela, Caracas')}}
+            {{request.location_string(class_ ='mdl-textfield__input')}}
             <label class="mdl-textfield__label">{{request.location_string.label}}</label>
         </div>
         <div class=" mdl-textfield--floating-label">
