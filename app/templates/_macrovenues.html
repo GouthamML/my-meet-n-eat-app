@@ -1,7 +1,6 @@
 {% macro rendervenues(venues) %}
-  <div class="mdl-cell mdl-cell--6-col mdl-cell--6-col-tablet">
       {% for r in venues %}
-                  <div class="demo-card-wide mdl-card mdl-shadow--2dp">
+      <div class="demo-card-wide mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet">
               {% if r.picture %}
               <div class="mdl-card__title" style="background: url('{{r.picture }}') center / cover;">
               {% else %}
@@ -33,7 +32,5 @@
                 </button>
               </div>
             </div>
-      {% endfor %}
-  </div>
-
-    {% endmacro %}
+    {% endfor %}
+{% endmacro %}

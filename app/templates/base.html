@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="description" content="A front-end template that helps you build fast, modern mobile web apps.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.9/angular.min.js"></script>
     {% assets "js_angular" %}
@@ -38,13 +39,13 @@
       <div class="mdl-layout-spacer"></div>
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
                   mdl-textfield--floating-label mdl-textfield--align-right">
-                <form action="#">
+                <form id="form_search_venues"  method="POST"  action="{{ url_for('users.search')}}">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
                         <label class="mdl-button mdl-js-button mdl-button--icon" for="site-search">
-                                <i class="material-icons">search</i>
+                                <i class="material-icons">search things in a city</i>
                             </label>
                             <div class="mdl-textfield__expandable-holder">
-                                <input class="mdl-textfield__input" type="search" id="site-search" />
+                                {{ searchform.search(class="mdl-textfield__input", type="search", id="site-search") }}
                                 <label class="mdl-textfield__label" for="site-search">Search</label>
                             </div>
                         </div>
@@ -80,7 +81,7 @@
         </span>
         <span class="mdl-chip mdl-chip--deletable">
         <span class="mdl-chip__text">Logout</span>
-          <a href="{{ url_for('logout') }}" class="mdl-chip__action"><i class="material-icons">cancel</i></a>
+          <a href="{{ url_for('users.logout') }}" class="mdl-chip__action"><i class="material-icons">cancel</i></a>
         </span>
         {% endif %}
     </ul>
@@ -92,7 +93,6 @@
    alt="I wish this site were Flask powered"
    title="I wish this site were Flask powered"></a>
 </footer>
-
 </div>
 </body>
-</html
+</html>

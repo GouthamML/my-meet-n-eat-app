@@ -1,7 +1,7 @@
 {% block register %}
   <div class="mdl-cell mdl-cell--4-col" ng-show="register">
       <h1>Register now!</h1>
-      <form method="POST" enctype=multipart/form-data action="{{url_for('register')}}">
+      <form method="POST" enctype=multipart/form-data action="{{url_for('users.register')}}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
            {{formregister.username(class_ ='mdl-textfield__input')}}

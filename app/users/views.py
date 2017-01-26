@@ -1,33 +1,31 @@
 from models import *
-from flask import jsonify, request, url_for, abort, g, redirect, render_template, flash, make_response
+from flask import jsonify, request, url_for, abort, g, redirect, render_template, flash, make_response, Blueprint
 import simplejson as json
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy import create_engine, or_, and_
-from datetime import datetime, time
-from flask_httpauth import HTTPBasicAuth
 from oauth import OAuthSignIn
-from flask_login import login_required, login_user, logout_user, current_user
+from flask_login import login_user, logout_user, current_user
 from flask import session as login_session
-from utils import auth, verify_password, load_user, flash_errors, parse_datetime
-from apis.foursquare_api import venues, get_country, getGeocodeLocation
-from forms import LoginForm, RegisterForm, RequestForm
-from . import app, login_manager, profile_photo
+from utils import auth, flash_errors, parse_datetime
+from apis.foursquare_api import venues, getGeocodeLocation
+from forms import LoginForm, RegisterForm, RequestForm, SearchForm
+from .. import profile_photo, csrf
 
 ip = 0
+searchform = SearchForm
 
-@app.before_request
+mod = Blueprint('users', __name__, template_folder='templates')
+
+@mod.before_request
 def before_request():
     g.user = current_user
     global ip
     ip = request.headers.getlist("X-Forwarded-For")[0] if request.headers.getlist("X-Forwarded-For") else request.remote_addr
 
 
-@app.route('/')
-@app.route('/index')
+@mod.route('/')
+@mod.route('/index')
 def index():
     if not login_session.get('username') :
-        return redirect(url_for('login'))
+        return redirect(url_for('users.login'))
 
     request_user = session.query(Request, DateTimeRequest). \
     filter(Request.user_id==login_session['id']). \
@@ -37,14 +35,12 @@ def index():
                       user_authenticated=True,
                       login_session=login_session,
                       request=RequestForm(request.form),
-                      request_user=request_user)
+                      request_user=request_user,
+                      searchform=searchform(request.form))
 
 
-@app.route('/login', methods=["GET", "POST"])
+@mod.route('/login', methods=["GET", "POST"])
 def login():
-    #venues_query1 = venues(get_country(ip), mealtype='coffee')
-    #venues_query2 = venues(get_country(ip))
-
     if login_session.get('username'):
         return redirect(url_for('index'))
     form = LoginForm(request.form)
@@ -68,12 +64,11 @@ def login():
     return render_template('login.html',
                             user_authenticated=False,
                             formlogin=form,
-                            formregister=RegisterForm(request.form)
+                            formregister=RegisterForm(request.form),
+                            searchform=searchform(request.form),
                             )
-#venues1=venues_query1,
-#"venues2=venues_query2
 
-@app.route('/register' , methods=['GET','POST'])
+@mod.route('/register' , methods=['GET','POST'])
 def register():
     form = RegisterForm(request.form)
     if request.method == 'POST':
@@ -97,26 +92,27 @@ def register():
         flash('User successfully registered')
     else:
         flash_errors(form)
-        return redirect(url_for('login'))
+        return redirect(url_for('users.login'))
 
-    return redirect(url_for('login'))
+    return redirect(url_for('users.login'))
 
 
-@app.route('/logout', methods = ['GET'])
+@mod.route('/logout', methods = ['GET'])
 def logout():
+    # this need refactor
     logout_user()
     g.user = None
     login_session.clear()
-    return redirect(url_for('login')) 
+    return redirect(url_for('users.login'))
 
 
-@app.route('/oauth/<provider>')
+@mod.route('/oauth/<provider>')
 def oauth_authorize(provider):
     oauth = OAuthSignIn.get_provider(provider)
     return oauth.authorize()
 
 
-@app.route('/callback/<provider>')
+@mod.route('/callback/<provider>')
 def oauth_callback(provider):
     oauth = OAuthSignIn.get_provider(provider)
     social_id, username, email, picture = oauth.callback()
@@ -134,17 +130,17 @@ def oauth_callback(provider):
     login_session['id'] = user.id
     token = user.generate_auth_token(1600)
 
-    return redirect(url_for('index', token = token))
+    return redirect(url_for('users.index', token = token))
 
 
-@app.route('/token')
+@mod.route('/token')
 @auth.login_required
 def get_auth_token():
     token = g.user.generate_auth_token()
     return jsonify({'token': token.decode('ascii')})
 
 
-@app.route('/create_request', methods = ['GET', 'POST'])
+@mod.route('/create_request', methods = ['GET', 'POST'])
 def create_request():
     form = RequestForm(request.form)
     if request.method == 'POST' and form.validate():
@@ -159,7 +155,7 @@ def create_request():
         date_request = parse_datetime(year=form.year.data, month=form.month.data, day=form.day.data)
         if date_request == None:
             flash('Date no valid...')
-            return redirect(url_for('index'))
+            return redirect(url_for('users.index'))
         newrequestdate = DateTimeRequest(
                             request=newrequest.id,
                             mealtime=form.meal_time.data,
@@ -167,11 +163,11 @@ def create_request():
         session.add(newrequestdate)
         session.commit()
         flash('Succefully!')
-        return redirect(url_for('index'))
+        return redirect(url_for('users.index'))
     flash_errors(form)
-    return redirect(url_for('index'))
+    return redirect(url_for('users.index'))
 
-@app.route('/request/delete/<int:id>', methods=['GET', 'POST'])
+@mod.route('/request/delete/<int:id>', methods=['GET', 'POST'])
 def delete_request(id):
     user = g.user
     r = session.query(Request).filter_by(id = id).first()
@@ -179,31 +175,33 @@ def delete_request(id):
     session.delete(r)
     session.delete(d)
     session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('users.index'))
 
-@app.route('/request/edit', methods=['POST'])
+@mod.route('/request/edit', methods=['POST'])
 def request_edit():
-    # BUG CON LOS REQUEST DATETIMES 
     if request.method == "POST":
         data = json.loads(request.data)
-        print data.values()
-        dt, lc, id, tm, tp = data.values()
-        print 'REQUEST ::::::::> ', id, tp, lc, tm, dt
+        request_query = session.query(Request).filter_by(id = data['id']).first()
+        request_query_datetime = session.query(DateTimeRequest).filter_by(request = request_query.id).first()
 
-        model_request = session.query(Request).filter_by(id = id).first()
-        model_request_datetime = session.query(DateTimeRequest).filter_by(request = model_request.id).first()
-        model_request.meal_type = tp
-        model_request.location = lc
-        model_request_datetime.meal_time = tm
-        model_request_datetime.meal_date = dt
+        geolocation = getGeocodeLocation(data['location'])
 
-        session.add(model_request)
-        session.add(model_request_datetime)
-        session.commit()
+        new = [data['meal_type'], data['location'],
+               geolocation[0], geolocation[1]]
+        old = [request_query.meal_type, request_query.location_string,
+               request_query.latitude, request_query.longitude]
 
-    return redirect(url_for('index'))
+        if set(new) != set(old):
+            request_query.edit_meal_type = data['meal_type']
+            request_query.edit_location_string = data['location']
+            request_query.edit_latitude = geolocation[0]
+            request_query.edit_longitude = geolocation[1]
+            session.add(request_query)
+            session.commit()
 
-@app.route('/request/edit/values', methods=['GET', 'POST'])
+    return redirect(url_for('users.index'))
+
+@mod.route('/request/edit/values', methods=['GET', 'POST'])
 def values_form_edit_request():
         if request.method == "GET":
             request_id = request.args.get('id')
@@ -212,7 +210,24 @@ def values_form_edit_request():
             #print r.serialize
             return json.dumps({'status':'OK',
                                 'meal': r.serialize
-                              });
+                              })
+
+
+@csrf.exempt
+@mod.route('/search/', methods=['POST'])
+def search():
+    form = searchform(request.form)
+    if form.validate():
+        city = form.search.data
+        venues_query = venues(city, mealtype='donuts', limit=5)
+        return render_template('explorer.html',
+                               query=venues_query,
+                               searchform=searchform(request.form))
+
+
+@mod.route('/request/all', methods=['GET'])
+def all_request():
+    pass
 
 # Handling Error - - - - - - - - - - - - - - - - - - - - - - - 
 
@@ -222,12 +237,12 @@ def unauthorized():
     # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
 
 
-@app.errorhandler(400)
+@mod.errorhandler(400)
 def not_found(error):
     return make_response(jsonify( { 'error': 'Bad request' } ), 400)
 
 
-@app.errorhandler(403)
+@mod.errorhandler(403)
 def notauthorized(error):
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
 

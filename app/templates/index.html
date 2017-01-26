@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<meta name="csrf-token" content="{{ csrf_token() }}">
-
-
 <style>
 .indexbg{
     background-color:thistle;
@@ -53,21 +50,16 @@
             <td>{{n[1].date}}</td>
             <td>{{n[0].filled|string()}}</td>
             <td>
-                <button class="mdl-button mdl-js-button mdl-button--icon">
-                    <a href="{{url_for('delete_request', id=n[0].id)}}">
-                        <i class="material-icons">delete</i>
-                    </a>
-                </button>
+                <a href="{{url_for('users.delete_request', id=n[0].id)}}" class="mdl-button mdl-js-button mdl-button--icon">
+                    <i class="material-icons">delete</i>
+                </a>
             </td>
             <td>
-                <button class="mdl-button mdl-js-button mdl-button--icon">
-                    <a ng-click="request_edit()" id-request="{{n[0].id}}" class="ajax_edit_request">
-                        <i class="material-icons">edit</i>
-                    </a>
+                <button ng-click="request_edit()" id-request="{{n[0].id}}"  class=" ajax_edit_request mdl-button mdl-js-button mdl-button--icon">
+                    <i class="material-icons">edit</i>
                 </button>
             </td>
             </tr>
-            {#ajax_get_values(n[0].id)#}
             {% endfor %}
         </tbody>
         </table>

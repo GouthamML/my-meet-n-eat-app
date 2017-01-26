@@ -20,6 +20,8 @@ setup(
         'sqlalchemy',
         'Flask-HTTPauth',
         'flask-login',
+        'flask-uploads',
+        'httplib2',
         'oauth',
         'redis',
         'simplejson',

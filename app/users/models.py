@@ -8,11 +8,13 @@ from flask_login import UserMixin
 from config import BASE_DIR
 import os
 import random, string
-
+from sqlalchemy.ext.hybrid import hybrid_property
 
 Base = declarative_base()
+engine = create_engine('sqlite:///{}'.format(os.path.join(BASE_DIR, 'app.db')))
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
 
-engine = create_engine('sqlite:///{}'.format(os.path.join(BASE_DIR, 'app.db'))); DBSession = sessionmaker(bind=engine); session = DBSession()
 
 secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
 
@@ -102,6 +104,42 @@ class Request(BaseModel):
     latitude = Column(Float)
     longitude = Column(Float)
     filled = Column(Boolean, unique=False, default=False)
+
+    @property
+    def get_date_time(self):
+        return session.query(DateTimeRequest).filter_by(request=self.id).first()
+
+    @hybrid_property
+    def edit_meal_type(self):
+        return self.meal_type
+
+    @edit_meal_type.setter
+    def edit_meal_type(self, value):
+        self.meal_type = value
+
+    @hybrid_property
+    def edit_location_string(self):
+        return self.location_string
+
+    @edit_location_string.setter
+    def edit_location_string(self, value):
+        self.location_string = value
+
+    @hybrid_property
+    def edit_latitude(self):
+        return self.latitude
+
+    @edit_latitude.setter
+    def edit_latitude(self, value):
+        self.latitude = value
+
+    @hybrid_property
+    def edit_longitude(self):
+        return self.longitude
+
+    @edit_longitude.setter
+    def edit_longitude(self, value):
+        self.longitude = value
 
     @property
     def serialize(self):
@@ -203,7 +241,7 @@ class MealDate(BaseModel):
     @property
     def get_meal_time(self):
         p = session.query(Proposal).filter_by(id=self.proposal_id).first()
-        p = session.query(DateTimeMeal).filter_by(id=p.request_id).first()
+        p = session.query(DateTimeRequest).filter_by(id=p.request_id).first()
         # Crear funcion que retorne el formato adecuado @property
         return p.meal_time
 

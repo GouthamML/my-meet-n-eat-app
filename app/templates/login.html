@@ -21,9 +21,7 @@
 <div class="inputbg" ng-controller="loginview" style="">
 <div class="mdl-grid">
     <div class="mdl-cell mdl-cell--4-col">
-        <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-            <a data-device="desktop" data-name="google" data-redirect="{{ url_for('index') }}" id='js-google-oauth-login' href="{{ url_for('oauth_authorize', provider='google') }}">Login with Google</a>
-        </button>
+            <a  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" data-device="desktop" data-name="google" data-redirect="{{ url_for('users.index') }}" id='js-google-oauth-login' href="{{ url_for('users.oauth_authorize', provider='google') }}">Login with Google</a>
         <button class="mdl-button mdl-button--raised" ng-click="action()">{a action_string a}</button>
     </div>
     {% include  'register.html' %}
@@ -31,7 +29,7 @@
     {% endblock%}
   <div class="mdl-cell mdl-cell--4-col" ng-show="login">
       <h1>Login with your account!</h1>
-      <form method="POST" action="{{url_for('login')}}">
+      <form method="POST" action="{{url_for('users.login')}}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <!-- Textfield with Floating Label -->
 
@@ -49,11 +47,6 @@
       </form>
   </div>
 </div>
-<div class="mdl-grid">
-
-    {#rendervenues(venues1)#}
-    {#rendervenues(venues2)#}
-
-</div>
 </div>
 {% endblock %}
+

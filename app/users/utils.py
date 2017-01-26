@@ -1,7 +1,8 @@
-from models import *
 from flask import g, flash
-from . import login_manager
 from flask_httpauth import HTTPBasicAuth
+from models import *
+
+from .. import login_manager
 
 auth = HTTPBasicAuth()
 

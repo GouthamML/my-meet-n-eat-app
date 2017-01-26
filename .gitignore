@@ -2,5 +2,8 @@
 *pdf
 *db
 app/static/.webassets-cache/
-app/static/datapicker/
 app/static/img/
+dist/
+build/
+app/Meet_N_Eat.egg-info/
+.eggs/

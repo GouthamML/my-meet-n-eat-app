@@ -1,7 +1,7 @@
 {% block request %}
 <div class="mdl-cell mdl-cell--4-col" ng-show='request'>
     <h4>Request</h4>
-    <form method="POST" action="{{ url_for('create_request') }}">
+    <form method="POST" action="{{ url_for('users.create_request') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             {{request.meal_type(class_ ='mdl-textfield__input')}}

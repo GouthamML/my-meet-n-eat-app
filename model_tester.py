@@ -1,4 +1,4 @@
-from app.models import *
+from app.users.models import *
 from colorama import init as init_color, Fore as color
 from app.apis.findARestaurant import findARestaurant as restaurant
 from app.apis.geocode import getGeocodeLocation as geolocation

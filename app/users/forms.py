@@ -3,7 +3,7 @@ from wtforms.fields.html5 import EmailField
 from wtforms_components import TimeField
 import datetime
 import calendar
-from . import profile_photo
+from .. import profile_photo
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
 
@@ -54,3 +54,6 @@ class RequestForm(SuperForm):
     year = SelectField('year', choices=[('2017', '2017'), ('2018', '2018')])
     month = SelectField('month', choices=zip(c, list(calendar.month_name)[1:]))
     day = SelectField('day', choices=zip(map(str, a), a))
+
+class SearchForm(Form):
+    search = StringField('USA, Miami or Donuts',  [validators.DataRequired(message='El campo esta vacio.')])

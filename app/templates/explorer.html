@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% from "_macrovenues.html" import rendervenues with context %}
+
+{% block content %}
+<style>
+.inputbg{
+    background-color: thistle;
+    background-position: center;
+}
+.demo-card-wide.mdl-card {
+  width: 512px;
+}
+.demo-card-wide > .mdl-card__title {
+  color: #fff;
+  height: 176px;
+}
+.demo-card-wide > .mdl-card__menu {
+  color: #fff;
+}
+</style>
+<div class="mdl-grid">
+    {{ rendervenues(query) }}
+</div>
+{% endblock %}
