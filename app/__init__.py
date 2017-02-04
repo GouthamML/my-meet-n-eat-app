@@ -1,13 +1,10 @@
 # coding=utf-8
 from flask import Flask
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy import create_engine
 from flask_assets import Environment
 from flask_login import LoginManager
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_wtf import CSRFProtect
 from users.models import Base, engine
-from sqlalchemy.ext.declarative import declarative_base
 
 from assets import create_assets
 
@@ -25,6 +22,7 @@ create_assets(assets)
 csrf.init_app(app)
 Base.metadata.create_all(engine)
 
-
 from app.users.views import mod as usersModule
 app.register_blueprint(usersModule)
+from app.api.views import mod as apiModule
+app.register_blueprint(apiModule)

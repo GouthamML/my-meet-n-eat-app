@@ -19,7 +19,6 @@ Requeriments:
 * SQLAlchemy
 * simplejson
 * colorama
-* Redis
 * oauth
 * rauth
 * itsdangerous

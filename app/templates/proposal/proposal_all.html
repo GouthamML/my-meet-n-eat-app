@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h4>proposals me</h4>
+
+{% for p in proposal_me %}
+  <h4>{{p.get_request_data}}</h4>
+  <br>
+{% endfor %}
+  <hr>
+
+<h4>proposals from</h4>
+
+{% for p in proposal_from %}
+  <h4>{{p.get_request_data}}</h4>
+  <br>
+{% endfor %}
+  <hr>
+{%endblock%}

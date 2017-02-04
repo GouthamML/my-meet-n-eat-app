@@ -1,5 +1,5 @@
 from models import *
-from flask import jsonify, request, url_for, abort, g, redirect, render_template, flash, make_response, Blueprint
+from flask import jsonify, request, url_for, g, redirect, render_template, flash, make_response, Blueprint
 import simplejson as json
 from oauth import OAuthSignIn
 from flask_login import login_user, logout_user, current_user
@@ -227,9 +227,45 @@ def search():
 
 @mod.route('/request/all', methods=['GET'])
 def all_request():
-    pass
+    form = searchform(request.form)
+    requests = session.query(Request, DateTimeRequest). \
+    filter(Request.filled==False).all()
+    return render_template('all_request.html',
+                           requests=requests,
+                           searchform=searchform(request.form))
 
-# Handling Error - - - - - - - - - - - - - - - - - - - - - - - 
+
+@mod.route('/proposal/create/<int:id>', methods=['GET'])
+def create_proposal(id):
+    if id == login_session['id']:
+        flash('Cannot create proposal for your request')
+        return redirect(url_for('users.all_request'))
+    r = session.query(Request).filter_by(id=id).first()
+    p = Proposal(
+        user_proposed_to=login_session['id'],
+        user_proposed_from=r.user_id,
+        request_id=r.id,
+        filled=False
+    )
+    session.add(p)
+    session.commit()
+    flash('Succefully!')
+    return redirect(url_for('users.index'))
+
+@mod.route('/proposal/me', methods=['GET'])
+def my_proposal():
+    form = searchform(request.form)
+    proposal_me = session.query(Proposal).filter_by(
+                user_proposed_to=login_session['id']
+                ).all()
+    proposal_from = session.query(Proposal).filter_by(
+                user_proposed_from=login_session['id']
+                ).all()
+    return render_template('proposal/proposal_all.html',
+                           proposal_me=proposal_me,
+                           proposal_from=proposal_from,
+                           searchform=searchform(request.form))
+# Handling Error - - - - - - - - - - - - - - - - - - - - - - -
 
 @auth.error_handler
 def unauthorized():
@@ -245,4 +281,3 @@ def not_found(error):
 @mod.errorhandler(403)
 def notauthorized(error):
     return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
-

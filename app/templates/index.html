@@ -12,8 +12,8 @@
   color: #AAA;
 }
 </style>
-<div class="mdl-grid indexbg" ng-controller="requestview" class="indexbg">  
-    <div class="mdl-cell mdl-cell--4-col">
+<div class="mdl-grid indexbg" ng-controller="requestview" class="indexbg">
+    <div class="mdl-cell mdl-cell--12-col">
     <!-- Colored raised button -->
         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored"
          ng-click="action()">
@@ -23,12 +23,15 @@
          ng-click="request_table()">
          {a request_table_string a}
         </button>
-    </div>  
+        <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" href="{{url_for('users.all_request')}}">All REQUEST</a>
+        <a class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" href="{{url_for('users.my_proposal')}}">MY PROPOSALS</a>
+        <img style="float:right;" src="{{login_session['picture']}}" width="100px" alt="userimg">
+    </div>
     {% include  'createrequest.html' %}
     {% block request %}
     {% endblock%}
     <hr>
-    <div ng-show="table">     
+    <div ng-show="table">
     <h3>Me requests:</h3><hr>
     <div class="mdl-cell mdl-cell--6-col">
         <table class="mdl-data-table mdl-js-data-table">
@@ -92,5 +95,5 @@
             {% block ajaxget %}{% endblock%}
             {% include  '_ajax.set_request_edit.html' %}
             {% block ajaxset %}{% endblock%}
-</div>  
+</div>
 {% endblock %}
