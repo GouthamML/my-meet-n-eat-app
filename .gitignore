@@ -7,3 +7,4 @@ dist/
 build/
 app/Meet_N_Eat.egg-info/
 .eggs/
+*.json

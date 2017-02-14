@@ -1,10 +1,10 @@
-from models import *
+from ..models import *
 from flask import jsonify, request, url_for, g, redirect, render_template, flash, make_response, Blueprint
 import simplejson as json
 from oauth import OAuthSignIn
-from flask_login import login_user, logout_user, current_user
+from flask_login import login_user, current_user
 from flask import session as login_session
-from utils import auth, flash_errors, parse_datetime
+from utils import auth, flash_errors, parse_datetime, login_required
 from apis.foursquare_api import venues, getGeocodeLocation
 from forms import LoginForm, RegisterForm, RequestForm, SearchForm
 from .. import profile_photo, csrf
@@ -13,6 +13,11 @@ ip = 0
 searchform = SearchForm
 
 mod = Blueprint('users', __name__, template_folder='templates')
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
+    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
 
 @mod.before_request
 def before_request():
@@ -42,7 +47,7 @@ def index():
 @mod.route('/login', methods=["GET", "POST"])
 def login():
     if login_session.get('username'):
-        return redirect(url_for('index'))
+        return redirect(url_for('users.index'))
     form = LoginForm(request.form)
     if request.method == 'POST' and form.validate():
         username = form.username.data
@@ -51,7 +56,7 @@ def login():
                           filter_by(username=username).first()
         if registered_user is None or not registered_user.verify_password(password):
             flash('Username or Password is invalid' , 'error')
-            return redirect(url_for('login'))
+            return redirect(url_for('users.login'))
         image = session.query(ProfileImage).filter_by(user_id=registered_user.id).first()
         login_user(registered_user) #flask login
         login_session['username'] = registered_user.username
@@ -59,7 +64,7 @@ def login():
         login_session['email'] = registered_user.email
         login_session['id'] = registered_user.id
         flash('Logged in successfully')
-        return redirect(request.args.get('next') or url_for('index'))
+        return redirect(request.args.get('next') or url_for('users.index'))
 
     return render_template('login.html',
                             user_authenticated=False,
@@ -82,6 +87,7 @@ def register():
         user.hash_password(form.password.data)
         session.add(user)
         session.commit()
+        print request.files
         if 'profile_photo' in request.files:
             filename = profile_photo.save(request.files['profile_photo'])
             newprofilephoto = ProfileImage(user_id=user.id,
@@ -100,8 +106,6 @@ def register():
 @mod.route('/logout', methods = ['GET'])
 def logout():
     # this need refactor
-    logout_user()
-    g.user = None
     login_session.clear()
     return redirect(url_for('users.login'))
 
@@ -237,10 +241,10 @@ def all_request():
 
 @mod.route('/proposal/create/<int:id>', methods=['GET'])
 def create_proposal(id):
-    if id == login_session['id']:
+    r = session.query(Request).filter_by(id=id).first()
+    if  r.user_id == login_session['id']:
         flash('Cannot create proposal for your request')
         return redirect(url_for('users.all_request'))
-    r = session.query(Request).filter_by(id=id).first()
     p = Proposal(
         user_proposed_to=login_session['id'],
         user_proposed_from=r.user_id,
@@ -253,6 +257,7 @@ def create_proposal(id):
     return redirect(url_for('users.index'))
 
 @mod.route('/proposal/me', methods=['GET'])
+@login_required
 def my_proposal():
     form = searchform(request.form)
     proposal_me = session.query(Proposal).filter_by(
@@ -265,19 +270,39 @@ def my_proposal():
                            proposal_me=proposal_me,
                            proposal_from=proposal_from,
                            searchform=searchform(request.form))
-# Handling Error - - - - - - - - - - - - - - - - - - - - - - -
 
-@auth.error_handler
-def unauthorized():
-    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
-    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
+@mod.route('/proposal/confirm/<int:id>', methods=['GET'])
+def confirm_proposal(id):
+    p = session.query(Proposal).filter_by(id=id).first()
+    if(p is not None):
+        rest = venues('Caracas',
+                      'Coffee',
+                      limit=1)
+        print rest
+        mealdate = MealDate(
+            proposal_id=p.id,
+            user_id_1=p.user_proposed_to,
+            user_id_2=p.user_proposed_from,
+            restaurant_name=unicode(rest[0]['name']),
+            restaurant_addres=rest[0]['location'],
+            restaurant_picture=rest[0]['picture']
+        )
+        session.add(mealdate)
+        session.commit
+        flash('Meal created!')
+        return redirect(url_for('users.my_mealdate'))
+    flash('Error') # BUG
+    return redirect(url_for('users.index'))
 
 
-@mod.errorhandler(400)
-def not_found(error):
-    return make_response(jsonify( { 'error': 'Bad request' } ), 400)
-
-
-@mod.errorhandler(403)
-def notauthorized(error):
-    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
+@mod.route('/mealdate/me', methods=['GET'])
+@login_required
+def my_mealdate():
+    form = searchform(request.form)
+    m = session.query(MealDate).filter_by(user_id_2=login_session['id']).all()
+    if m == None:
+        flash('You not have Mealdates')
+        return redirect(url_for('users.index'))
+    return render_template('mealdate/mealdate_all.html',
+                           mealdate_all=m,
+                           searchform=searchform(request.form))

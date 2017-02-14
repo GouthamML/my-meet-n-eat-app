@@ -1,24 +1,24 @@
 {% block request %}
-<div class="mdl-cell mdl-cell--4-col" ng-show='request'>
+<div class="" ng-show='request'>
     <h4>Request</h4>
     <form method="POST" action="{{ url_for('users.create_request') }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            {{request.meal_type(class_ ='mdl-textfield__input')}}
-            <label class="mdl-textfield__label">{{request.meal_type.label}}</label>
+        <div class="      ">
+            {{request.meal_type(class_ ='')}}
+            <label class="  ">{{request.meal_type.label}}</label>
         </div>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-            {{request.location_string(class_ ='mdl-textfield__input')}}
-            <label class="mdl-textfield__label">{{request.location_string.label}}</label>
+        <div class="        ">
+            {{request.location_string(class_ ='')}}
+            <label class="  ">{{request.location_string.label}}</label>
         </div>
-        <div class=" mdl-textfield--floating-label">
+        <div class=" ">
             {{request.meal_time}}
             {{request.year}}
             {{request.month}}
             {{request.day}}
         </div>
         <br>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <div class="        ">
             {{request.submit(class_ ='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect')}}
         </div>
     </form>

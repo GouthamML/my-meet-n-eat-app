@@ -1,10 +1,10 @@
 # coding=utf-8
-from flask import Flask
+from flask import Flask, make_response, jsonify
 from flask_assets import Environment
 from flask_login import LoginManager
 from flask_uploads import UploadSet, configure_uploads, IMAGES
 from flask_wtf import CSRFProtect
-from users.models import Base, engine
+from models import Base, engine
 
 from assets import create_assets
 
@@ -21,6 +21,18 @@ assets = Environment(app)
 create_assets(assets)
 csrf.init_app(app)
 Base.metadata.create_all(engine)
+
+# Handling Error - - - - - - - - - - - - - - - - - - - - - - -
+
+@app.errorhandler(400)
+def not_found(error):
+    return make_response(jsonify( { 'error': 'Bad request' } ), 400)
+
+
+@app.errorhandler(403)
+def notauthorized(error):
+    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
+
 
 from app.users.views import mod as usersModule
 app.register_blueprint(usersModule)

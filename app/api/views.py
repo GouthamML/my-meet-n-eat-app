@@ -1,4 +1,4 @@
-from ..users.models import *
+from ..models import *
 from ..users.utils import auth
 from flask import jsonify, request, abort, g, Blueprint
 
@@ -220,7 +220,7 @@ def new_date():
         abort(400)
     errors = MealDate.validate(request.json)
     if len(errors) == 0:
-        proposalsa_id = request.json.get('proposal_id')
+        proposal_id = request.json.get('proposal_id')
         accept_proposal = request.json.get('accept_proposal')
         proposal = session.query(Proposal).filter_by(id = proposal_id).first()
         if proposal is None:
@@ -292,16 +292,3 @@ def delete_date(id):
     session.delete(date)
     session.commit()
     return jsonify( { 'result': True } )
-
-@auth.error_handler
-def unauthorized():
-    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)
-    # return 403 instead of 401 to prevent browsers from displaying the default auth dialog
-
-@mod.errorhandler(400)
-def not_found(error):
-    return make_response(jsonify( { 'error': 'Bad request' } ), 400)
-
-@mod.errorhandler(403)
-def notauthorized(error):
-    return make_response(jsonify( { 'error': 'Unauthorized access' } ), 403)

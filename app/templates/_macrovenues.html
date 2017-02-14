@@ -1,33 +1,33 @@
 {% macro rendervenues(venues) %}
       {% for r in venues %}
-      <div class="demo-card-wide mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet">
+      <div>
               {% if r.picture %}
-              <div class="mdl-card__title" style="background: url('{{r.picture }}') center / cover;">
+              <div class="    " style="background: url('{{r.picture }}') center / cover;">
               {% else %}
-               <div class="mdl-card__title" style="background: url('{{ url_for('static', filename = 'img/fede.jpg') }}') center / cover;">
+               <div class="    " style="background: url('{{ url_for('static', filename = 'img/fede.jpg') }}') center / cover;">
                {%endif%}
 
-                  <h2 class="mdl-card__title-text">{{ r.name }}</h2>
+                  <h2 class="  ">{{ r.name }}</h2>
               </div>
-              <div class="mdl-card__supporting-text">
+              <div class="">
                   <h6>{{r.location}}</h6>
                   <hr>
                   {% if r.menu_url %}
-                    <a href="{{r.menu_url}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                    <a href="{{r.menu_url}}" class="">
                     View Menu
                     </a>
                   {% endif %}
               </div>
               {% if r.menu_url %}
-              <div class="mdl-card__actions mdl-card--border">
-                <a href="{{r.url}}" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+              <div class="">
+                <a href="{{r.url}}" class="">
                   Visit web
                 </a>
               </div>
                {% endif %}
 
-              <div class="mdl-card__menu">
-                <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+              <div class="">
+                <button class="">
                   <i class="material-icons">share</i>
                 </button>
               </div>

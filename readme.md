@@ -2,7 +2,7 @@
 
 ---------------------
 
-***Build with Material Design Lite and AngularJS***
+***Build with Bootstrap 4 and AngularJS***
 
 -------------------
 

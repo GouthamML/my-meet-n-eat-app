@@ -12,6 +12,7 @@
 
 {% for p in proposal_from %}
   <h4>{{p.get_request_data}}</h4>
+  <a href="{{url_for('users.confirm_proposal', id=p.id)}}">confirm proposal!</a>
   <br>
 {% endfor %}
   <hr>

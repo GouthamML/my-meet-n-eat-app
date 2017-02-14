@@ -12,50 +12,31 @@
     {% assets "js_angular" %}
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
-    {% assets "css_material" %}
+    {% assets "css_bootstrap" %}
     <link rel="stylesheet" href="{{ ASSET_URL }}" type="text/css" />
     {% endassets %}
-    {% assets "js_material" %}
+    {% assets "js_bootstrap" %}
     <script src="{{ ASSET_URL }}"></script>
     {% endassets %}
 </head>
 <body ng-app="flask_app">
- <!-- Uses a header that contracts as the page scrolls down. -->
-<style>
-.demo-layout-waterfall .mdl-layout__header-row .mdl-navigation__link:last-of-type  {
-  padding-right: 0;
-}
-.mdl-layout__header {
-  height: 10% !important;
-}
-</style>
-<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.brown-amber.min.css" />
-<div class="demo-layout-waterfall mdl-layout mdl-js-layout">
-  <header class="mdl-layout__header mdl-layout__header--waterfall">
-    <!-- Top row, always visible -->
-    <div class="mdl-layout__header-row">
-      <!-- Title -->
-      <span class="mdl-layout-title">Meet and Eat </span>
-      <div class="mdl-layout-spacer"></div>
-      <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
-                  mdl-textfield--floating-label mdl-textfield--align-right">
-                <form id="form_search_venues"  method="POST"  action="{{ url_for('users.search')}}">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
-                        <label class="mdl-button mdl-js-button mdl-button--icon" for="site-search">
-                                <i class="material-icons">search things in a city</i>
-                            </label>
-                            <div class="mdl-textfield__expandable-holder">
-                                {{ searchform.search(class="mdl-textfield__input", type="search", id="site-search") }}
-                                <label class="mdl-textfield__label" for="site-search">Search</label>
-                            </div>
-                        </div>
-                </form>
-      </div>
-    </div>
-  </header>
+    <h1>Meet n' Eat</h1>
+    {% if user_authenticated %}
+        <h1>{{login_session.username}}</h1>
+        <a href="{{ url_for('users.logout') }}" class="mdl-chip__action"><i class="material-icons">cancel</i></a>
+    {% endif %}
+    <form id="form_search_venues"  method="POST"  action="{{ url_for('users.search')}}">
+        <div class="">
+            <label class="" for="">
+                <i class="material-icons">search things in a city</i>
+            </label>
+            <div class="">
+                {{ searchform.search(class="mdl-textfield__input", type="search", id="site-search") }}
+                <label class="" for="">Search</label>
+            </div>
+        </div>
+    </form>
 
-  <main class="mdl-layout__content">
-    <div class="page-content">
 
     {% for message in get_flashed_messages(with_categories=false) %}
       <div>
@@ -67,32 +48,11 @@
     {% block content %}
 
     {% endblock %}
-    
-    </div>
-  </main>
-  <footer class="mdl-mini-footer" style="padding-top:45px">
-  <div class="mdl-mini-footer__left-section">
-    <ul class="mdl-mini-footer__link-list">
-        {% if user_authenticated %}
-        <!-- Contact Chip -->
-        <span class="mdl-chip mdl-chip--contact" style="margin-right:20px;">
-            <span class="mdl-chip__contact mdl-color--teal mdl-color-text--white">C</span>
-            <span class="mdl-chip__text">{{login_session.username}}</a></span>
-        </span>
-        <span class="mdl-chip mdl-chip--deletable">
-        <span class="mdl-chip__text">Logout</span>
-          <a href="{{ url_for('users.logout') }}" class="mdl-chip__action"><i class="material-icons">cancel</i></a>
-        </span>
-        {% endif %}
-    </ul>
-  </div>
-  <div class="mdl-layout-spacer"></div>
-  <a href="http://flask.pocoo.org/" style="float:right;"><img
+  <a href="http://flask.pocoo.org/" ><img
    src="http://flask.pocoo.org/static/badges/i-wish.png"
    border="0"
    alt="I wish this site were Flask powered"
-   title="I wish this site were Flask powered"></a>
-</footer>
-</div>
+   title="I wish this site were Flask powered">
+  </a>
 </body>
 </html>

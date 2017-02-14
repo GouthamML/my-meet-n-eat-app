@@ -1,10 +1,20 @@
-from flask import g, flash
+from flask import g, flash, redirect, url_for, request
+from views import login_session
 from flask_httpauth import HTTPBasicAuth
-from models import *
+from functools import wraps
+from ..models import *
 
 from .. import login_manager
 
 auth = HTTPBasicAuth()
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not 'username' in login_session:
+            return redirect(url_for('users.login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 
 @login_manager.user_loader
 def load_user(id):

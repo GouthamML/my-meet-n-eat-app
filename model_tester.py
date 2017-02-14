@@ -1,4 +1,4 @@
-from app.users.models import *
+from app.models import *
 from colorama import init as init_color, Fore as color
 from app.apis.findARestaurant import findARestaurant as restaurant
 from app.apis.geocode import getGeocodeLocation as geolocation
@@ -39,6 +39,10 @@ def add_user():
             user.hash_password(data[1])
             user.set_email(data[2])
             session.add(user)
+            session.commit()
+            img = ProfileImage(user_id=user.id, image_filename='default.png',
+                               image_url='app/static/img/profile/default.png')
+            session.add(img)
             session.commit()
     return True
 
@@ -158,10 +162,10 @@ def create_mealdate(count_id = len(usernames) - len(usernames) + 1):
     return True
 
 def get_mealdate():
-    user = session.query(User).filter_by(username=usernames[2][0]).first()
-    mealdate = session.query(MealDate).filter_by(user_id_2=user.id).first()
-    print(color.LIGHTWHITE_EX+str(mealdate.get_meal_time))
-
+    user = session.query(User).filter_by(username='willy_chessy').first()
+    mealdate = session.query(MealDate).filter_by(user_id_1=user.id).all()
+    for i in mealdate:
+        print i
 if __name__ == '__main__':
     print(color.LIGHTGREEN_EX + 'TEST FOR MODELS OF MEET AND MEAN').center(85)
     #time.sleep(2)
@@ -169,8 +173,7 @@ if __name__ == '__main__':
     #all_user()
     #assert_user()
     #create_request()
-    all_requests()
-    #all_daterequest()
+    #all_requests()
     #create_proposal(query_mealtype)
     #create_mealdate()
-    #get_mealdate()
+    get_mealdate()

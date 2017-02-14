@@ -2,46 +2,30 @@
 {% from "_macrovenues.html" import rendervenues with context %}
 
 {% block content %}
-<style>
-.inputbg{
-    background-color: thistle;
-    background-position: center;
-}
-.demo-card-wide.mdl-card {
-  width: 512px;
-}
-.demo-card-wide > .mdl-card__title {
-  color: #fff;
-  height: 176px;
-}
-.demo-card-wide > .mdl-card__menu {
-  color: #fff;
-}
-</style>
 <div class="inputbg" ng-controller="loginview" style="">
-<div class="mdl-grid">
-    <div class="mdl-cell mdl-cell--4-col">
-            <a  class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" data-device="desktop" data-name="google" data-redirect="{{ url_for('users.index') }}" id='js-google-oauth-login' href="{{ url_for('users.oauth_authorize', provider='google') }}">Login with Google</a>
-        <button class="mdl-button mdl-button--raised" ng-click="action()">{a action_string a}</button>
+<div class="">
+    <div class="">
+            <a  class="" data-device="desktop" data-name="google" data-redirect="{{ url_for('users.index') }}" id='js-google-oauth-login' href="{{ url_for('users.oauth_authorize', provider='google') }}">Login with Google</a>
+        <button class="" ng-click="action()">{a action_string a}</button>
     </div>
     {% include  'register.html' %}
     {% block register %}
     {% endblock%}
-  <div class="mdl-cell mdl-cell--4-col" ng-show="login">
+  <div class="" ng-show="login">
       <h1>Login with your account!</h1>
       <form method="POST" action="{{url_for('users.login')}}">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
       <!-- Textfield with Floating Label -->
 
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <div class="">
             {{formlogin.username(class_ ='mdl-textfield__input')}}
-            <label class="mdl-textfield__label">Username...</label>
+            <label class="">Username...</label>
         </div>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <div class="">
             {{formlogin.password(class_ ='mdl-textfield__input')}}
-            <label class="mdl-textfield__label">Password...</label>
+            <label class="">Password...</label>
         </div>
-        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+        <div class="">
             {{formlogin.submit(class_ ='mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect')}}
         </div>
       </form>
@@ -49,4 +33,3 @@
 </div>
 </div>
 {% endblock %}
-
