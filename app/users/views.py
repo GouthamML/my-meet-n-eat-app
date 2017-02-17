@@ -274,6 +274,9 @@ def my_proposal():
 @mod.route('/proposal/confirm/<int:id>', methods=['GET'])
 def confirm_proposal(id):
     p = session.query(Proposal).filter_by(id=id).first()
+    #: Hay inconsistencias con los venues. A veces vienen incompletos
+    #: Se necesita hacer una busqueda mas inteligente y capturar excepciones
+    #: Hasta poder dar un resultado sea cula sea, mas cercano al practico
     if(p is not None):
         rest = venues('Caracas',
                       'Coffee',
@@ -288,7 +291,7 @@ def confirm_proposal(id):
             restaurant_picture=rest[0]['picture']
         )
         session.add(mealdate)
-        session.commit
+        session.commit()
         flash('Meal created!')
         return redirect(url_for('users.my_mealdate'))
     flash('Error') # BUG

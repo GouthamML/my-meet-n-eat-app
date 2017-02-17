@@ -169,11 +169,11 @@ def get_mealdate():
 if __name__ == '__main__':
     print(color.LIGHTGREEN_EX + 'TEST FOR MODELS OF MEET AND MEAN').center(85)
     #time.sleep(2)
-    #add_user()
+    add_user()
     #all_user()
     #assert_user()
     #create_request()
     #all_requests()
     #create_proposal(query_mealtype)
     #create_mealdate()
-    get_mealdate()
+    #get_mealdate()
